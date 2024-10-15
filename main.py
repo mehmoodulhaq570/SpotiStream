@@ -6,7 +6,6 @@ import re  # Import regex for sanitizing file names
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-
 # Function to sanitize file names by removing/replacing problematic characters
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)  # Replaces problematic characters with underscore
@@ -174,7 +173,7 @@ if __name__ == '__main__':
     print("Welcome to SpotiFly!")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("A piece of music that reaches your soul.... :)")
-    print("\n")
+    print("---------------------------------")
 
     # Check for existing Spotify credentials
     if os.path.exists('spotify_credentials.txt'):
@@ -239,7 +238,8 @@ if __name__ == '__main__':
             print("Invalid choice. Please enter 1 or 2.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
-            print("Thank you for using SpotiFly! Goodbye!")
+            print("Thank you for using SpotiFly Music! Goodbye!")
+            print("--------------------------------------------")
             break
 
     # Explicitly delete Spotify client
