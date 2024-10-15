@@ -9,7 +9,6 @@ def get_spotify_credentials():
 
     # Check if the credentials file already exists
     if not os.path.exists(credentials_file):
-        # If the file doesn't exist, ask the user for credentials
         print("Spotify credentials file not found. Please provide your credentials.")
         CLIENT_ID = input("Enter your Spotify Client ID: ").strip()
         CLIENT_SECRET = input("Enter your Spotify Client Secret: ").strip()
@@ -19,7 +18,7 @@ def get_spotify_credentials():
             file.write(f"{CLIENT_ID}\n{CLIENT_SECRET}\n")
         print(f"Credentials saved to {credentials_file}")
     else:
-        # If the credentials file exists, read from it
+        print(f"Found existing credentials in {credentials_file}")
         with open(credentials_file, 'r') as file:
             lines = file.readlines()
             if len(lines) >= 2:
@@ -39,21 +38,25 @@ def authenticate_spotify():
     REDIRECT_URI = 'http://localhost:8888/callback'  # Or any valid redirect URI you specified in the dashboard
     scope = 'playlist-read-private user-library-read'
 
+    print("Attempting Spotify authentication...")
     try:
         sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
                                                        client_secret=CLIENT_SECRET,
                                                        redirect_uri=REDIRECT_URI,
                                                        scope=scope))
+        print("Authentication successful!")
         return sp
     except Exception as e:
         print(f"Error during authentication: {e}")
         return None
 
 # Fetch user's playlists directly
+print("Starting Spotify authentication process...")
 sp = authenticate_spotify()
 
 # Check if authentication was successful
 if sp:
+    print("Fetching playlists...")
     try:
         playlists = sp.current_user_playlists()
         if playlists['items']:
