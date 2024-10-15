@@ -6,6 +6,7 @@ import os
 # Function to get Spotify credentials from the user and save them in a text file
 def get_spotify_credentials():
     credentials_file = 'spotify_credentials.txt'
+    print("Checking if credentials file exists...")
 
     # Check if the credentials file already exists
     if not os.path.exists(credentials_file):
@@ -14,6 +15,7 @@ def get_spotify_credentials():
         CLIENT_SECRET = input("Enter your Spotify Client Secret: ").strip()
 
         # Save the credentials in a text file
+        print("Saving credentials to file...")
         with open(credentials_file, 'w') as file:
             file.write(f"{CLIENT_ID}\n{CLIENT_SECRET}\n")
         print(f"Credentials saved to {credentials_file}")
@@ -33,6 +35,7 @@ def get_spotify_credentials():
 
 # Function to authenticate with Spotify using credentials
 def authenticate_spotify():
+    print("Retrieving Spotify credentials...")
     CLIENT_ID, CLIENT_SECRET = get_spotify_credentials()
 
     REDIRECT_URI = 'http://localhost:8888/callback'  # Or any valid redirect URI you specified in the dashboard
