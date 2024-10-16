@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Edited main file" />
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated Release">
+      <change beforePath="$PROJECT_DIR$/../dist/spoti_stream-0.1.0-py3-none-any.whl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../dist/spoti_stream-0.1.0.tar.gz" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../spoti_stream.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/../spoti_stream.egg-info/PKG-INFO" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,7 +92,7 @@
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
       <workItem from="1729066347950" duration="11298000" />
-      <workItem from="1729103567944" duration="366000" />
+      <workItem from="1729103567944" duration="1404000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
@@ -208,7 +214,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729102479524</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Updated Release">
+      <option name="closed" value="true" />
+      <created>1729103982383</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1729103982383</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Updated Release">
+      <option name="closed" value="true" />
+      <created>1729104016254</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1729104016254</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -287,7 +309,8 @@
     <MESSAGE value="Edited requirements.txt" />
     <MESSAGE value="Added the feature of cutom song search and txt file can also be used as input" />
     <MESSAGE value="Edited main file" />
-    <option name="LAST_COMMIT_MESSAGE" value="Edited main file" />
+    <MESSAGE value="Updated Release" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated Release" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
