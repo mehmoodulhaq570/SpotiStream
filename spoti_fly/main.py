@@ -5,10 +5,19 @@ from .downloader import download_songs_from_playlist, download_songs_from_csv, d
 
 def main():
     # Welcome message
-    print("Welcome to SpotiFly!")
+    # print("             ************************")
+    # print("             * Welcome to SpotiFly! *")
+    # print("             ************************")
+    # print("Download and listen to non-stop Spotify music with our tool.")
+    # print("A piece of music that reaches your soul to pacify it..... :)")
+    # print("           =---------------------------------=   ")
+    # print("For more information visit: https://github.com/mehmoodulhaq570\n")
+
+    print("\n[INFO] Welcome to SpotiFly! ")
     print("Download and listen to non-stop Spotify music with our tool.")
-    print("A piece of music that reaches your soul.... :)")
-    print("   =---------------------------------=   ")
+    print("Music is an art which reach your soul to pacify it..... :)")
+    print("For more information visit: https://github.com/mehmoodulhaq570")
+    print("        =---------------------------------=   ")
 
     # Check for existing Spotify credentials
     sp = authenticate_spotify()
@@ -68,6 +77,7 @@ def main():
                 download_song(song_name, artist_name)
 
         elif choice == '4':
+            print("\n    *-------------------------------*    ")
             print("Thank you for using SpotiFly Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
@@ -76,6 +86,7 @@ def main():
             print("Invalid choice. Please enter 1, 2, 3 or 4.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
+            print("\n    *-------------------------------*    ")
             print("Thank you for using SpotiFly Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
