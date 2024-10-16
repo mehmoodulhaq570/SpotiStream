@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "spoti_fly"
+version = "0.1.0"
+description = "A tool to download Spotify playlist songs using YouTube."
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    { name = "Mehmood Ul Haq", email = "mehmoodulhaq1040@gmail.com" }
+]
+keywords = ["spotify", "music", "download", "youtube", "mp3"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+requires-python = ">=3.6"
+
+[project.urls]
+Homepage = "https://github.com/mehmoodulhaq570/SpotiFly"
+Documentation = "https://github.com/mehmoodulhaq570/SpotiFly#readme"
+Source = "https://github.com/mehmoodulhaq570/SpotiFly"
+Bug Tracker = "https://github.com/mehmoodulhaq570/SpotiFly/issues"
+
+[project.dependencies]
+spotipy = "^2.19.0"
+yt-dlp = "^2021.12.1"
+moviepy = "^1.0.3"
+pydub = "^0.25.1"  # Optional if used for audio processing
