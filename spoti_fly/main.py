@@ -4,15 +4,6 @@ from .spotify_utils import authenticate_spotify, get_user_playlists, fetch_songs
 from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
 
 def main():
-    # Welcome message
-    # print("             ************************")
-    # print("             * Welcome to SpotiFly! *")
-    # print("             ************************")
-    # print("Download and listen to non-stop Spotify music with our tool.")
-    # print("A piece of music that reaches your soul to pacify it..... :)")
-    # print("           =---------------------------------=   ")
-    # print("For more information visit: https://github.com/mehmoodulhaq570\n")
-
     print("\n[INFO] Welcome to SpotiFly! ")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("Music is an art which reach your soul to pacify it..... :)")
