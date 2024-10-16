@@ -1,0 +1,21 @@
+# Include the README file
+include README.md
+
+# Include the license file, if you have one
+include LICENSE
+
+# Include the requirements file
+include requirements.txt
+
+# Include any text files like Spotify credentials
+include spoti_fly/*.txt
+
+# Include any CSV files, if applicable
+include spoti_fly/*.csv
+
+# Include all Python files
+recursive-include spoti_fly *.py
+
+# Include any other non-Python files, like audio files (optional)
+include spoti_fly/songs/*.mp3
+include spoti_fly/songs/*.webm
