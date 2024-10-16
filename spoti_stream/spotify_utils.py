@@ -17,9 +17,14 @@ def read_credentials_from_file(file_path='spotify_credentials.txt'):
             client_id = lines[0].strip()
             client_secret = lines[1].strip()
             return client_id, client_secret
+    except FileNotFoundError:
+        # Suppress the error message if the file does not exist
+        return None, None
     except Exception as e:
+        # Print other types of errors
         print(f"An error occurred while reading credentials: {e}")
         return None, None
+
 
 def authenticate_spotify():
     client_id, client_secret = read_credentials_from_file()

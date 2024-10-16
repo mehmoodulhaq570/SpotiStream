@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated Release">
-      <change beforePath="$PROJECT_DIR$/../dist/spoti_stream-0.1.0-py3-none-any.whl" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../dist/spoti_stream-0.1.0.tar.gz" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../spoti_stream.egg-info/PKG-INFO" beforeDir="false" afterPath="$PROJECT_DIR$/../spoti_stream.egg-info/PKG-INFO" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated Release" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -92,7 +86,7 @@
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
       <workItem from="1729066347950" duration="11298000" />
-      <workItem from="1729103567944" duration="1404000" />
+      <workItem from="1729103567944" duration="1711000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
@@ -230,7 +224,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729104016254</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Updated Release">
+      <option name="closed" value="true" />
+      <created>1729106398996</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1729106398996</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Updated Release">
+      <option name="closed" value="true" />
+      <created>1729106424668</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1729106424668</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -311,17 +321,6 @@
     <MESSAGE value="Edited main file" />
     <MESSAGE value="Updated Release" />
     <option name="LAST_COMMIT_MESSAGE" value="Updated Release" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/spotify_utils.py</url>
-          <line>1</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/spoti_fly$main.coverage" NAME="main Coverage Results" MODIFIED="1729067532891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
