@@ -51,8 +51,14 @@ def main():
             csv_file_path = input("Enter the full path to your CSV file: ").strip()
             download_songs_from_csv(csv_file_path)
 
+
+        elif choice == '3':
+            print("Thank you for using SpotiFly Music! Goodbye!")
+            print("--------------------------------------------")
+            break
+
         else:
-            print("Invalid choice. Please enter 1 or 2.")
+            print("Invalid choice. Please enter 1, 2 or 3.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
             print("Thank you for using SpotiFly Music! Goodbye!")
