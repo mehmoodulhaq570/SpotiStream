@@ -5,6 +5,4 @@ from .install_dependencies import install_scoop, install_ffmpeg
 install_scoop()
 install_ffmpeg()
 
-# Import the main functionality of the package
-from .main import main
 
