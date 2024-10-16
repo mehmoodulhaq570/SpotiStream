@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="New commit" />
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="New commit">
+      <change beforePath="$PROJECT_DIR$/spoti_fly/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/spoti_fly/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/spoti_fly/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,7 +27,7 @@
         <option name="title" value="All" />
       </GitPushTagMode>
     </option>
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -51,7 +54,7 @@
   "keyToString": {
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/mehmo/Downloads/mp3downloader/spoti_fly",
+    "last_opened_file_path": "C:/Users/mehmo/Downloads/mp3downloader",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -84,6 +87,7 @@
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
       <workItem from="1729066347950" duration="369000" />
+      <workItem from="1729102564540" duration="132000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
