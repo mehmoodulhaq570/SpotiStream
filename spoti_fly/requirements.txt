@@ -1,4 +1,0 @@
-spotipy==2.19.0
-yt-dlp==2023.7.6
-moviepy==1.0.3
-setuptools>=42
