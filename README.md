@@ -1,6 +1,6 @@
-# SpotiFly
+# SpotiStream
 
-**SpotiFly** is a Python package that allows you to download songs from Spotify playlists by fetching song information and downloading the corresponding audio from YouTube. The songs are saved in MP3 format.
+**SpotiStream** is a Python package that allows you to download songs from Spotify playlists by fetching song information and downloading the corresponding audio from YouTube. The songs are saved in MP3 format.
 
 ## Features
 
@@ -16,5 +16,5 @@
 1. Clone the repository or install the package:
 
 ```bash
-git clone https://github.com/your-repo/spoti_fly.git
-cd spoti_fly
+git clone https://github.com/your-repo/spoti_stream.git
+cd spoti_stream

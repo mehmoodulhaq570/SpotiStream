@@ -4,9 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Added the feature of cutom song search and txt file can also be used as input">
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Edited main file">
+      <change beforePath="$PROJECT_DIR$/../MANIFEST.in" beforeDir="false" afterPath="$PROJECT_DIR$/../MANIFEST.in" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../setup.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +55,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
@@ -87,7 +91,7 @@
       <workItem from="1729064152123" duration="404000" />
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
-      <workItem from="1729066347950" duration="5719000" />
+      <workItem from="1729066347950" duration="10950000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
@@ -169,7 +173,31 @@
       <option name="project" value="LOCAL" />
       <updated>1729094995519</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Edited main file">
+      <option name="closed" value="true" />
+      <created>1729096699897</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1729096699897</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Edited main file">
+      <option name="closed" value="true" />
+      <created>1729096798941</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1729096798941</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Edited main file">
+      <option name="closed" value="true" />
+      <created>1729098227012</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1729098227012</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -247,7 +275,8 @@
     <MESSAGE value="Edited files" />
     <MESSAGE value="Edited requirements.txt" />
     <MESSAGE value="Added the feature of cutom song search and txt file can also be used as input" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added the feature of cutom song search and txt file can also be used as input" />
+    <MESSAGE value="Edited main file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Edited main file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

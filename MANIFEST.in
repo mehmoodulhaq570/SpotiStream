@@ -8,14 +8,14 @@ include LICENSE
 include requirements.txt
 
 # Include any text files like Spotify credentials
-include spoti_fly/*.txt
+include spoti_stream/*.txt
 
 # Include any CSV files, if applicable
-include spoti_fly/*.csv
+include spoti_stream/*.csv
 
 # Include all Python files
-recursive-include spoti_fly *.py
+recursive-include spoti_stream *.py
 
 # Include any other non-Python files, like audio files (optional)
-include spoti_fly/songs/*.mp3
-include spoti_fly/songs/*.webm
+include spoti_stream/songs/*.mp3
+include spoti_stream/songs/*.webm
