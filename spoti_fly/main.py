@@ -1,14 +1,14 @@
 # spoti_fly/main.py
 import os
 from .spotify_utils import authenticate_spotify, get_user_playlists, fetch_songs_from_playlist
-from .downloader import download_songs_from_playlist, download_songs_from_csv
+from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
 
 def main():
     # Welcome message
     print("Welcome to SpotiFly!")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("A piece of music that reaches your soul.... :)")
-    print("---------------------------------")
+    print("   =---------------------------------=   ")
 
     # Check for existing Spotify credentials
     sp = authenticate_spotify()
@@ -16,9 +16,11 @@ def main():
     while True:
         print("\nWhat would you like to do?")
         print("1. Use a Spotify playlist")
-        print("2. Provide your own CSV file")
+        print("2. Provide your own CSV or TXT file")
+        print("3. Manually type in song names")
+        print("4. Exit from SpotiFly")
 
-        choice = input("Please enter 1 or 2: ").strip()
+        choice = input("Please enter 1, 2, 3 or 4: ").strip()
 
         if choice == '1':
             playlists = get_user_playlists(sp)
@@ -48,21 +50,34 @@ def main():
                 print(f"An error occurred: {e}")
 
         elif choice == '2':
-            csv_file_path = input("Enter the full path to your CSV file: ").strip()
-            download_songs_from_csv(csv_file_path)
+            file_path = input("Enter the full path to your CSV or TXT file: ").strip()
 
+            if file_path.lower().endswith('.csv'):
+                download_songs_from_csv(file_path)
+            elif file_path.lower().endswith('.txt'):
+                download_songs_from_txt(file_path)
+            else:
+                print("Invalid file format. Please provide a .csv or .txt file.")
 
         elif choice == '3':
+            while True:
+                song_name = input("Enter the song name (or 'q' to stop): ").strip()
+                if song_name.lower() == 'q':
+                    break
+                artist_name = input(f"Enter the artist name for '{song_name}': ").strip()
+                download_song(song_name, artist_name)
+
+        elif choice == '4':
             print("Thank you for using SpotiFly Music! Goodbye!")
-            print("--------------------------------------------")
+            print("    *-------------------------------*    ")
             break
 
         else:
-            print("Invalid choice. Please enter 1, 2 or 3.")
+            print("Invalid choice. Please enter 1, 2, 3 or 4.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
             print("Thank you for using SpotiFly Music! Goodbye!")
-            print("--------------------------------------------")
+            print("    *-------------------------------*    ")
             break
 
 if __name__ == '__main__':

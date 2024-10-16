@@ -1,4 +1,5 @@
 # spoti_fly/downloader.py
+
 import os
 import yt_dlp
 from .converter import convert_webm_to_mp3
@@ -67,3 +68,18 @@ def download_songs_from_csv(csv_file_path, download_dir='songs'):
         print(f"File not found: {csv_file_path}")
     except Exception as e:
         print(f"An error occurred while reading the CSV file: {e}")
+
+def download_songs_from_txt(txt_file_path, download_dir='songs'):
+    try:
+        with open(txt_file_path, 'r', encoding='utf-8') as txtfile:
+            for line in txtfile:
+                song_info = line.strip().split('-')
+                if len(song_info) == 2:
+                    song_name, artist_name = song_info
+                    download_song(song_name.strip(), artist_name.strip(), download_dir)
+                else:
+                    print(f"Invalid format in TXT file: {line}")
+    except FileNotFoundError:
+        print(f"File not found: {txt_file_path}")
+    except Exception as e:
+        print(f"An error occurred while reading the TXT file: {e}")
