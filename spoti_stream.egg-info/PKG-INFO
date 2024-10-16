@@ -1,0 +1,42 @@
+Metadata-Version: 2.1
+Name: spoti_stream
+Version: 0.1.0
+Summary: A tool to download Spotify playlist songs using YouTube
+Home-page: https://github.com/mehmoodulhaq570/SpotiStream
+Author: Mehmood Ul Haq
+Author-email: mehmoodulhaq1040@gmail.com
+License: MIT
+Project-URL: Documentation, https://github.com/mehmoodulhaq570/SpotiStream#readme
+Project-URL: Source, https://github.com/mehmoodulhaq570/SpotiStream
+Project-URL: Bug Tracker, https://github.com/mehmoodulhaq570/SpotiStream/issues
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.6
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: spotipy>=2.19.0
+Requires-Dist: yt-dlp>=2021.12.1
+Requires-Dist: moviepy>=1.0.3
+Requires-Dist: pydub>=0.25.1
+
+# SpotiStream
+
+**SpotiStream** is a Python package that allows you to download songs from Spotify playlists by fetching song information and downloading the corresponding audio from YouTube. The songs are saved in MP3 format.
+
+## Features
+
+- Authenticate with Spotify using OAuth to access playlists.
+- Fetch and download songs from Spotify playlists.
+- Save song information in a CSV file for easy access.
+- Convert downloaded YouTube audio from WebM to MP3 format.
+- Download songs directly from a user-provided CSV file.
+- Handles credential storage and reuse.
+
+## Installation
+
+1. Clone the repository or install the package:
+
+```bash
+git clone https://github.com/your-repo/spoti_stream.git
+cd spoti_stream
