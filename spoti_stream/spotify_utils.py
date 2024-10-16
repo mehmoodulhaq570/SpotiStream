@@ -30,7 +30,7 @@ def authenticate_spotify():
     client_id, client_secret = read_credentials_from_file()
 
     if client_id is None or client_secret is None:
-        client_id = input("Enter your Spotify Client ID: ")
+        client_id = input("\nEnter your Spotify Client ID: ")
         client_secret = input("Enter your Spotify Client Secret: ")
         save_credentials_to_file(client_id, client_secret)
 
