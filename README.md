@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-0.1.2-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
+[![Version](https://img.shields.io/badge/version-1.0-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/mehmoodulhaq570/SpotiStream)](https://github.com/mehmoodulhaq570/SpotiStream/issues)
 [![Size](https://img.shields.io/github/repo-size/mehmoodulhaq570/SpotiStream.svg)](https://github.com/mehmooulhaq570/SpotiStream)
@@ -61,6 +61,12 @@ You will need a Spotify Developer account to use SpotiStream. Follow the steps:
 3. Add the credentials when prompted during authentication or store them in a `spotify_credentials.txt` file in the root directory of the project.
 
 ## Usage
+
+Install the tool by running this command:
+```bash
+pip install spoti-strean==1.0
+````
+You explicitly need to specify the version to 1.0 to user the latest release
 
 Run SpotiStream from the command line:
 ```bash
