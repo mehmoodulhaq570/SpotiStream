@@ -7,7 +7,7 @@ def main():
     print("\n[INFO] Welcome to SpotiStream! ")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("Music is an art which reaches your soul to pacify it..... :)")
-    print("For more information visit: https://github.com/mehmoodulhaq570")
+    print("For more information visit: https://github.com/mehmoodulhaq570/SpotiStream")
     print("=---------------------------------=")
 
     while True:
