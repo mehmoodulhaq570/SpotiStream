@@ -1,0 +1,2 @@
+[console_scripts]
+spoti_fly = spoti_stream.main:main
