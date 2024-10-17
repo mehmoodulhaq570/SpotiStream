@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated Release" />
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated line 33" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -86,7 +86,7 @@
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
       <workItem from="1729066347950" duration="11298000" />
-      <workItem from="1729103567944" duration="1711000" />
+      <workItem from="1729103567944" duration="2565000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
@@ -240,7 +240,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729106424668</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Updated Release">
+      <option name="closed" value="true" />
+      <created>1729106669225</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1729106669225</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Updated line 33">
+      <option name="closed" value="true" />
+      <created>1729106779359</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1729106779359</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -320,7 +336,8 @@
     <MESSAGE value="Added the feature of cutom song search and txt file can also be used as input" />
     <MESSAGE value="Edited main file" />
     <MESSAGE value="Updated Release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated Release" />
+    <MESSAGE value="Updated line 33" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated line 33" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/spoti_fly$main.coverage" NAME="main Coverage Results" MODIFIED="1729067532891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -26,6 +26,7 @@ def read_credentials_from_file(file_path='spotify_credentials.txt'):
         return None, None
 
 
+# Add the feature of Request timeout too
 def authenticate_spotify():
     client_id, client_secret = read_credentials_from_file()
 
