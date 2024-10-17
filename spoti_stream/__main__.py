@@ -6,12 +6,9 @@ from .downloader import download_songs_from_playlist, download_songs_from_csv, d
 def main():
     print("\n[INFO] Welcome to SpotiFly! ")
     print("Download and listen to non-stop Spotify music with our tool.")
-    print("Music is an art which reach your soul to pacify it..... :)")
+    print("Music is an art which reaches your soul to pacify it..... :)")
     print("For more information visit: https://github.com/mehmoodulhaq570")
-    print("        =---------------------------------=   ")
-
-    # Check for existing Spotify credentials
-    sp = authenticate_spotify()
+    print("***---------------------------------***")
 
     while True:
         print("\nWhat would you like to do?")
@@ -23,6 +20,9 @@ def main():
         choice = input("Please enter 1, 2, 3 or 4: ").strip()
 
         if choice == '1':
+            # Authenticate Spotify credentials only when option 1 is selected
+            sp = authenticate_spotify()
+
             playlists = get_user_playlists(sp)
 
             if playlists:
