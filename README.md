@@ -1,3 +1,9 @@
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Issues](https://img.shields.io/github/issues/mehmoodulhaq570/SpotiStream)](https://github.com/mehmoodulhaq570/SpotiStream/issues)
+[![Size](https://img.shields.io/github/repo-size/mehmoodulhaq570/SpotiStream.svg)](https://github.com/mehmooulhaq570/SpotiStream)
+[![Downloads](https://img.shields.io/github/downloads/mehmoodulhaq570/SpotiStream/total.svg)](https://github.com/mehmoodulhaq570/SpotiStream/releases)
+
 # SpotiStream
 
 ## Overview
