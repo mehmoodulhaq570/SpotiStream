@@ -28,7 +28,7 @@ To install SpotiStream, clone this repository and follow the steps below:
 ```bash
 git clone https://github.com/mehmoodulhaq570/SpotiStream.git
 cd SpotiStream
-```bash
+````
 
 ### Installation
 
@@ -39,12 +39,12 @@ Create a virtual environment using conda or virtualenv, and install the dependen
 ```bash
 conda create --name spotistream python=3.x
 conda activate spotistream
-```bash
+````
 
 ### Install Required Packages
 ```bash
 pip install -r requirements.txt
-```bash
+````
 
 ## Get Spotify API Credentials
 
@@ -59,9 +59,8 @@ You will need a Spotify Developer account to use SpotiStream. Follow the steps:
 Run SpotiStream from the command line:
 ```bash
 python -m spotistream
-```bash
+````
 
-# SpotiStream
 
 ## Main Menu
 
