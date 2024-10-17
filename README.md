@@ -64,9 +64,8 @@ You will need a Spotify Developer account to use SpotiStream. Follow the steps:
 
 Install the tool by running this command:
 ```bash
-pip install spoti_stream==1.1
+pip install spoti_stream
 ````
-You explicitly need to specify the version to 1.0 to user the latest release
 
 Run SpotiStream from the command line:
 ```bash
