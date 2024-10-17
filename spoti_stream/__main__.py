@@ -1,4 +1,4 @@
-# spoti_fly/__main__.py
+# spoti_stream/__main__.py
 import os
 from .spotify_utils import authenticate_spotify, get_user_playlists, fetch_songs_from_playlist
 from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
@@ -8,7 +8,7 @@ def main():
     print("Download and listen to non-stop Spotify music with our tool.")
     print("Music is an art which reaches your soul to pacify it..... :)")
     print("For more information visit: https://github.com/mehmoodulhaq570")
-    print("***---------------------------------***")
+    print("=---------------------------------=")
 
     while True:
         print("\nWhat would you like to do?")

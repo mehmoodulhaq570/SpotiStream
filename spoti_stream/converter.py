@@ -1,4 +1,4 @@
-# spoti_fly/converter.py
+# spoti_stream/converter.py
 import os
 import subprocess
 

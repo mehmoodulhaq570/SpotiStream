@@ -1,4 +1,4 @@
-# spoti_fly/downloader.py
+# spoti_stream/downloader.py
 
 import os
 import yt_dlp

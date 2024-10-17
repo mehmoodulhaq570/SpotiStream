@@ -1,6 +1,13 @@
-# spoti_fly/spotify_utils.py
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import requests  # Make sure to import the requests library
+import threading
+import sys
+
+# Function to handle timeout
+def timeout_handler():
+    print("Authentication request timed out. Exiting...")
+    sys.exit(1)  # Terminate the program
 
 def save_credentials_to_file(client_id, client_secret, file_path='spotify_credentials.txt'):
     try:
@@ -18,15 +25,11 @@ def read_credentials_from_file(file_path='spotify_credentials.txt'):
             client_secret = lines[1].strip()
             return client_id, client_secret
     except FileNotFoundError:
-        # Suppress the error message if the file does not exist
-        return None, None
+        return None, None  # Suppress the error message if the file does not exist
     except Exception as e:
-        # Print other types of errors
         print(f"An error occurred while reading credentials: {e}")
         return None, None
 
-
-# Add the feature of Request timeout too
 def authenticate_spotify():
     client_id, client_secret = read_credentials_from_file()
 
@@ -37,11 +40,28 @@ def authenticate_spotify():
 
     REDIRECT_URI = 'http://localhost:8888/callback'
     scope = 'playlist-read-private user-library-read'
-    sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
-                                                   client_secret=client_secret,
-                                                   redirect_uri=REDIRECT_URI,
-                                                   scope=scope))
-    return sp
+
+    # Start the timeout timer for 30 seconds
+    timer = threading.Timer(30, timeout_handler)  # Timeout after 30 seconds
+    timer.start()
+
+    try:
+        # Authenticate with Spotify
+        sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=client_id,
+                                                       client_secret=client_secret,
+                                                       redirect_uri=REDIRECT_URI,
+                                                       scope=scope,
+                                                       requests_timeout=60))  # Timeout for requests
+        timer.cancel()  # Cancel the timer if authentication is successful
+        return sp
+    except requests.Timeout:
+        print("Request timed out. Exiting program...")
+        sys.exit(1)  # Terminate the program
+    except spotipy.SpotifyException as e:
+        print(f"An error occurred during authentication: {e}")
+        sys.exit(1)  # Terminate the program on authentication failure
+    finally:
+        timer.cancel()  # Ensure the timer is cancelled in case of an exception
 
 def get_user_playlists(sp):
     try:
