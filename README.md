@@ -70,7 +70,7 @@ You explicitly need to specify the version to 1.0 to user the latest release
 
 Run SpotiStream from the command line:
 ```bash
-python -m spotistream
+python -m spoti-stream
 ````
 
 

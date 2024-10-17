@@ -4,7 +4,7 @@ from .spotify_utils import authenticate_spotify, get_user_playlists, fetch_songs
 from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
 
 def main():
-    print("\n[INFO] Welcome to SpotiFly! ")
+    print("\n[INFO] Welcome to SpotiStream! ")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("Music is an art which reaches your soul to pacify it..... :)")
     print("For more information visit: https://github.com/mehmoodulhaq570")
@@ -15,7 +15,7 @@ def main():
         print("1. Use a Spotify playlist")
         print("2. Provide your own CSV or TXT file")
         print("3. Manually type in song names")
-        print("4. Exit from SpotiFly")
+        print("4. Exit from SpotiStream")
 
         choice = input("Please enter 1, 2, 3 or 4: ").strip()
 
@@ -69,7 +69,7 @@ def main():
 
         elif choice == '4':
             print("\n    *-------------------------------*    ")
-            print("Thank you for using SpotiFly Music! Goodbye!")
+            print("Thank you for using SpotiStream Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
 
@@ -78,7 +78,7 @@ def main():
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
             print("\n    *-------------------------------*    ")
-            print("Thank you for using SpotiFly Music! Goodbye!")
+            print("Thank you for using SpotiStream Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
 
