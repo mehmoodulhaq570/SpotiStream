@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated setup version to 1.1 and readmefile">
+    <list default="true" id="d258e6c1-aeb2-46b9-987e-3cf0b62d8768" name="Changes" comment="Updated  readme file">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,7 +57,7 @@
     "Python.spotify_utils.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/mehmo/Downloads/Testing/muDIC",
+    "last_opened_file_path": "C:/Users/mehmo/Downloads/mp3downloader",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -90,7 +90,7 @@
       <workItem from="1729064852337" duration="1256000" />
       <workItem from="1729066163097" duration="17000" />
       <workItem from="1729066347950" duration="11298000" />
-      <workItem from="1729103567944" duration="14557000" />
+      <workItem from="1729103567944" duration="25194000" />
     </task>
     <task id="LOCAL-00001" summary="Enhanced Files">
       <option name="closed" value="true" />
@@ -364,7 +364,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729193238781</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Updated  readme file">
+      <option name="closed" value="true" />
+      <created>1729193856600</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1729193856600</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -455,7 +463,8 @@
     <MESSAGE value="Changed the version to 1.0 and updated the readme file" />
     <MESSAGE value="Updated the name to spotistream" />
     <MESSAGE value="Updated setup version to 1.1 and readmefile" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated setup version to 1.1 and readmefile" />
+    <MESSAGE value="Updated  readme file" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated  readme file" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
