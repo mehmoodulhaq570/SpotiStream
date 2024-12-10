@@ -1,7 +1,8 @@
 # spoti_stream/__main__.py
-import os
-from .spotify_utils import authenticate_spotify, get_user_playlists, fetch_songs_from_playlist
+
+from .spotify_utils import authenticate_spotify, get_user_playlists
 from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
+
 
 def main():
     print("\n[INFO] Welcome to SpotiStream! ")
@@ -25,10 +26,16 @@ def main():
 
             playlists = get_user_playlists(sp)
 
+            # Debugging: Print the raw playlists data
+
             if playlists:
                 print("Your Playlists:")
                 for i, playlist in enumerate(playlists):
-                    print(f"{i + 1}. {playlist['name']} (ID: {playlist['id']})")
+                    # Validate playlist data
+                    if playlist and 'name' in playlist and 'id' in playlist:
+                        print(f"{i + 1}. {playlist['name']} (ID: {playlist['id']})")
+                    else:
+                        print(f"{i + 1}. [Invalid Playlist Data]")
             else:
                 print("No playlists found or an error occurred.")
 
@@ -81,6 +88,7 @@ def main():
             print("Thank you for using SpotiStream Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
+
 
 if __name__ == '__main__':
     main()
