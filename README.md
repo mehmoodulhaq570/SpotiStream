@@ -28,8 +28,20 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 
 ## Installation
 
+## Usage
+
+Install the tool by running this command:
+```bash
+pip install spoti_stream
+````
+
+Run SpotiStream from the command line:
+```bash
+python -m spoti_stream
+````
+
 ### Clone the Repository
-To install SpotiStream, clone this repository and follow the steps below:
+To modify SpotiStream according to your need, clone this repository and follow the steps below:
 
 ```bash
 git clone https://github.com/mehmoodulhaq570/SpotiStream.git
@@ -59,19 +71,6 @@ You will need a Spotify Developer account to use SpotiStream. Follow the steps:
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
 2. Create a new app and get your Client ID and Client Secret.
 3. Add the credentials when prompted during authentication or store them in a `spotify_credentials.txt` file in the root directory of the project.
-
-## Usage
-
-Install the tool by running this command:
-```bash
-pip install spoti_stream
-````
-
-Run SpotiStream from the command line:
-```bash
-python -m spoti_stream
-````
-
 
 ## Main Menu
 
