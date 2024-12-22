@@ -28,7 +28,7 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 
 ## Installation
 
-## Usage
+### Usage
 
 Install the tool by running this command:
 ```bash
