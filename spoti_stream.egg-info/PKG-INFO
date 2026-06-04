@@ -1,6 +1,6 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.4
 Name: spoti_stream
-Version: 1.1
+Version: 1.2
 Summary: A tool to download Spotify playlist songs using YouTube
 Home-page: https://github.com/mehmoodulhaq570/SpotiStream
 Author: Mehmood Ul Haq
@@ -16,9 +16,21 @@ Requires-Python: >=3.6
 Description-Content-Type: text/markdown
 License-File: LICENSE.txt
 Requires-Dist: spotipy>=2.19.0
-Requires-Dist: yt-dlp>=2021.12.1
+Requires-Dist: yt-dlp>=2026.3.17
 Requires-Dist: moviepy>=1.0.3
 Requires-Dist: pydub>=0.25.1
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: license
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
 
 [![Version](https://img.shields.io/badge/version-1.1-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -50,8 +62,20 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 
 ## Installation
 
+### Usage
+
+Install the tool by running this command:
+```bash
+pip install spoti_stream
+````
+
+Run SpotiStream from the command line:
+```bash
+python -m spoti_stream
+````
+
 ### Clone the Repository
-To install SpotiStream, clone this repository and follow the steps below:
+To modify SpotiStream according to your need, clone this repository and follow the steps below:
 
 ```bash
 git clone https://github.com/mehmoodulhaq570/SpotiStream.git
@@ -81,20 +105,6 @@ You will need a Spotify Developer account to use SpotiStream. Follow the steps:
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
 2. Create a new app and get your Client ID and Client Secret.
 3. Add the credentials when prompted during authentication or store them in a `spotify_credentials.txt` file in the root directory of the project.
-
-## Usage
-
-Install the tool by running this command:
-```bash
-pip install spoti_stream==1.1
-````
-You explicitly need to specify the version to 1.0 to user the latest release
-
-Run SpotiStream from the command line:
-```bash
-python -m spoti_stream
-````
-
 
 ## Main Menu
 
@@ -129,3 +139,5 @@ We welcome contributions! Please feel free to submit issues or pull requests to 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
