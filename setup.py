@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="spoti_stream",  # Name of the package
-    version="1.2",  # Version of the package
+    version="1.3",  # Version of the package
     author="Mehmood Ul Haq",  # Your name as the author
     author_email="mehmoodulhaq1040@gmail.com",  # Your email
     description="A tool to download Spotify playlist songs using YouTube",  # Short description
@@ -28,14 +28,10 @@ setup(
     install_requires=[  # List of dependencies for the package
         "spotipy>=2.19.0",
         "yt-dlp>=2026.3.17",
+        "imageio-ffmpeg>=0.6.0",
         "moviepy>=1.0.3",
         "pydub>=0.25.1",  # Optional, if used
     ],
-    entry_points={  # Entry points to create command-line tools
-        'console_scripts': [
-            'spoti_fly=spoti_stream.__main__:main',  # Creates a CLI command 'spoti_fly'
-        ],
-    },
     include_package_data=True,  # Include additional files specified in MANIFEST.in
     license="MIT",  # License for your package
 )

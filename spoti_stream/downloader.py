@@ -2,6 +2,7 @@
 
 import os
 import yt_dlp
+import imageio_ffmpeg
 import re
 
 def sanitize_filename(filename):
@@ -23,6 +24,7 @@ def download_song(song_name, artist_name, download_dir='songs'):
         'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.%(ext)s"),
         'noplaylist': True,
         'quiet': True,  # Suppress yt-dlp logging
+        'ffmpeg_location': imageio_ffmpeg.get_ffmpeg_exe(),
         'retries': 3,
         'fragment_retries': 3,
         'extractor_args': {
