@@ -1,8 +1,7 @@
-[![Version](https://img.shields.io/badge/version-1.3-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Issues](https://img.shields.io/github/issues/mehmoodulhaq570/SpotiStream)](https://github.com/mehmoodulhaq570/SpotiStream/issues)
-[![Size](https://img.shields.io/github/repo-size/mehmoodulhaq570/SpotiStream.svg)](https://github.com/mehmoodulhaq570/SpotiStream)
-[![Downloads](https://img.shields.io/github/downloads/mehmoodulhaq570/SpotiStream/total.svg)](https://github.com/mehmoodulhaq570/SpotiStream/releases)
+[![Version](https://img.shields.io/badge/version-1.3-blue)](https://pypi.org/project/spoti-stream/)
+[![Package](https://img.shields.io/badge/package-spoti__stream-blue)](https://pypi.org/project/spoti-stream/)
+[![Python](https://img.shields.io/badge/python-3.6%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # SpotiStream
 
