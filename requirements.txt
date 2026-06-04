@@ -3,3 +3,4 @@ yt-dlp>=2026.3.17
 moviepy==1.0.3
 setuptools>=42
 requests>=2.26.0
+imageio-ffmpeg>=0.6.0
