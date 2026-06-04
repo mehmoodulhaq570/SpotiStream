@@ -2,7 +2,6 @@
 
 import os
 import yt_dlp
-from .converter import convert_webm_to_mp3
 import re
 
 def sanitize_filename(filename):
@@ -13,16 +12,29 @@ def download_song(song_name, artist_name, download_dir='songs'):
     sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
     mp3_file_name = f"{sanitized_song_name}.mp3"
     mp3_file_path = os.path.join(download_dir, mp3_file_name)
+    os.makedirs(download_dir, exist_ok=True)
 
     if os.path.exists(mp3_file_path):
         print(f"'{song_name} by {artist_name}' is already downloaded as MP3. Skipping...")
         return
 
     ydl_opts = {
-        'format': 'bestaudio[ext=webm]/bestaudio',
-        'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.webm"),
+        'format': 'bestaudio/best',
+        'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.%(ext)s"),
         'noplaylist': True,
-        'quiet': True  # Suppress yt-dlp logging
+        'quiet': True,  # Suppress yt-dlp logging
+        'retries': 3,
+        'fragment_retries': 3,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['default', '-web_safari'],
+            },
+        },
+        'postprocessors': [{
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '192',
+        }],
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -30,14 +42,6 @@ def download_song(song_name, artist_name, download_dir='songs'):
             print(f"Searching and downloading: {query}")
             ydl.download([f"ytsearch1:{query}"])
             print(f"Downloaded: {mp3_file_name}")
-
-            # Convert downloaded .webm to .mp3
-            convert_webm_to_mp3(os.path.join(download_dir, f"{sanitized_song_name}.webm"), mp3_file_name, download_dir)
-
-            # Remove the .webm file after conversion
-            webm_file_path = os.path.join(download_dir, f"{sanitized_song_name}.webm")
-            if os.path.exists(webm_file_path):
-                os.remove(webm_file_path)
 
         except yt_dlp.utils.DownloadError as e:
             print(f"Download error for {song_name} by {artist_name}: {e}")

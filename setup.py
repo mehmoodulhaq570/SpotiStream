@@ -27,7 +27,7 @@ setup(
     python_requires='>=3.6',  # Minimum version of Python required
     install_requires=[  # List of dependencies for the package
         "spotipy>=2.19.0",
-        "yt-dlp>=2021.12.1",
+        "yt-dlp>=2026.3.17",
         "moviepy>=1.0.3",
         "pydub>=0.25.1",  # Optional, if used
     ],
