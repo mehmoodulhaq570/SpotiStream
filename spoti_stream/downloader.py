@@ -8,6 +8,15 @@ import re
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)  # Replaces problematic characters with underscore
 
+def show_download_progress(progress):
+    if progress.get('status') == 'downloading':
+        percent = progress.get('_percent_str', '').strip()
+        speed = progress.get('_speed_str', '').strip()
+        eta = progress.get('_eta_str', '').strip()
+        print(f"\rDownloading: {percent} | Speed: {speed} | ETA: {eta}", end='', flush=True)
+    elif progress.get('status') == 'finished':
+        print("\rDownload complete. Converting to MP3...          ")
+
 def download_song(song_name, artist_name, download_dir='songs'):
     query = f"{song_name} {artist_name} audio"
     sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
@@ -25,6 +34,7 @@ def download_song(song_name, artist_name, download_dir='songs'):
         'noplaylist': True,
         'quiet': True,  # Suppress yt-dlp logging
         'ffmpeg_location': imageio_ffmpeg.get_ffmpeg_exe(),
+        'progress_hooks': [show_download_progress],
         'retries': 3,
         'fragment_retries': 3,
         'extractor_args': {

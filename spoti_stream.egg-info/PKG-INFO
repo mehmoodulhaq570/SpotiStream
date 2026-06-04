@@ -17,6 +17,7 @@ Description-Content-Type: text/markdown
 License-File: LICENSE.txt
 Requires-Dist: spotipy>=2.19.0
 Requires-Dist: yt-dlp>=2026.3.17
+Requires-Dist: imageio-ffmpeg>=0.6.0
 Requires-Dist: moviepy>=1.0.3
 Requires-Dist: pydub>=0.25.1
 Dynamic: author
