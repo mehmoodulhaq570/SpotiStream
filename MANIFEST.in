@@ -1,21 +1,11 @@
 # Include the README file
 include README.md
 
-# Include the license file, if you have one
-include LICENSE
+# Include the license file
+include LICENSE.txt
 
 # Include the requirements file
 include requirements.txt
 
-# Include any text files like Spotify credentials
-include spoti_stream/*.txt
-
-# Include any CSV files, if applicable
-include spoti_stream/*.csv
-
 # Include all Python files
 recursive-include spoti_stream *.py
-
-# Include any other non-Python files, like audio files (optional)
-include spoti_stream/songs/*.mp3
-include spoti_stream/songs/*.webm

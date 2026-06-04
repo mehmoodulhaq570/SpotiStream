@@ -1,7 +1,7 @@
-[![Version](https://img.shields.io/badge/version-1.1-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
+[![Version](https://img.shields.io/badge/version-1.3-blue)](https://github.com/mehmoodulhaq570/SpotiStream)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Issues](https://img.shields.io/github/issues/mehmoodulhaq570/SpotiStream)](https://github.com/mehmoodulhaq570/SpotiStream/issues)
-[![Size](https://img.shields.io/github/repo-size/mehmoodulhaq570/SpotiStream.svg)](https://github.com/mehmooulhaq570/SpotiStream)
+[![Size](https://img.shields.io/github/repo-size/mehmoodulhaq570/SpotiStream.svg)](https://github.com/mehmoodulhaq570/SpotiStream)
 [![Downloads](https://img.shields.io/github/downloads/mehmoodulhaq570/SpotiStream/total.svg)](https://github.com/mehmoodulhaq570/SpotiStream/releases)
 
 # SpotiStream
@@ -10,7 +10,7 @@
 SpotiStream is a Python tool designed to help users download and save songs from their Spotify playlists. The application fetches songs from Spotify and offers multiple options for downloading them. This package leverages the Spotify API to access and manage playlists, and supports different methods of song input for maximum flexibility.
 
 ## Motivation
-The idea for SpotiStream came after my Spotify account was blocked due to a payment issue. This experience led me to think about creating a tool that could provide an alternative way to download songs in MP3 format without depending solely on Spotify’s premium services. With SpotiStream, users can download their favorite tracks in a simple, user-friendly way and avoid interruptions due to service outages or account problems.
+The idea for SpotiStream came after my Spotify account was blocked due to a payment issue. This experience led me to think about creating a tool that could provide an alternative way to download songs in MP3 format without depending solely on Spotify's premium services. With SpotiStream, users can download their favorite tracks in a simple, user-friendly way and avoid interruptions due to service outages or account problems.
 
 ## Features
 - **Spotify Playlist Download**: Fetch and download songs directly from your Spotify playlists.
@@ -64,6 +64,8 @@ conda activate spotistream
 pip install -r requirements.txt
 ````
 
+SpotiStream uses `yt-dlp` for downloading audio and FFmpeg for MP3 conversion. If MP3 conversion fails, install FFmpeg and make sure it is available in your terminal.
+
 ## Get Spotify API Credentials
 
 You will need a Spotify Developer account to use SpotiStream. Follow the steps:
@@ -104,6 +106,6 @@ We welcome contributions! Please feel free to submit issues or pull requests to 
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License - see the LICENSE.txt file for details.
 
 
