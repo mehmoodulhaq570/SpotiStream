@@ -8,6 +8,18 @@ import re
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)  # Replaces problematic characters with underscore
 
+def parse_song_details_from_youtube_title(title, uploader=None):
+    title = re.sub(r'\s*\[[^\]]*\]|\s*\([^\)]*(official|audio|video|lyrics|visualizer|mv)[^\)]*\)', '', title, flags=re.IGNORECASE)
+    title = re.sub(r'\s+', ' ', title).strip()
+
+    separators = [' - ', ' – ', ' — ', ' | ']
+    for separator in separators:
+        if separator in title:
+            artist_name, song_name = title.split(separator, 1)
+            return song_name.strip(), artist_name.strip()
+
+    return title, uploader or 'Unknown Artist'
+
 def show_download_progress(progress):
     if progress.get('status') == 'downloading':
         percent = progress.get('_percent_str', '').strip()
@@ -69,6 +81,40 @@ def download_songs_from_playlist(sp, playlist_id, playlist_name, download_dir='s
             download_song(song_name, artist_name, download_dir)
     else:
         print(f"No songs found in playlist: {playlist_name}")
+
+def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
+    ydl_opts = {
+        'extract_flat': True,
+        'quiet': True,
+        'ignoreerrors': True,
+    }
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            playlist_info = ydl.extract_info(playlist_url, download=False)
+    except yt_dlp.utils.DownloadError as e:
+        print(f"YouTube playlist error: {e}")
+        return
+    except Exception as e:
+        print(f"An error occurred while reading the YouTube playlist: {e}")
+        return
+
+    entries = playlist_info.get('entries', []) if playlist_info else []
+    entries = [entry for entry in entries if entry]
+
+    if not entries:
+        print("No videos found in this YouTube playlist.")
+        return
+
+    playlist_title = playlist_info.get('title', 'YouTube Playlist')
+    print(f"Found {len(entries)} videos in '{playlist_title}'.")
+
+    for index, entry in enumerate(entries, start=1):
+        title = entry.get('title') or f'Track {index}'
+        uploader = entry.get('uploader') or entry.get('channel')
+        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
+        download_song(song_name, artist_name, download_dir)
 
 def download_songs_from_csv(csv_file_path, download_dir='songs'):
     import csv

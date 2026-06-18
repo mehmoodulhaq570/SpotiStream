@@ -1,7 +1,13 @@
 # spoti_stream/__main__.py
 
 from .spotify_utils import authenticate_spotify, get_user_playlists
-from .downloader import download_songs_from_playlist, download_songs_from_csv, download_songs_from_txt, download_song
+from .downloader import (
+    download_songs_from_playlist,
+    download_songs_from_csv,
+    download_songs_from_txt,
+    download_songs_from_youtube_playlist,
+    download_song,
+)
 
 
 def main():
@@ -16,9 +22,10 @@ def main():
         print("1. Use a Spotify playlist")
         print("2. Provide your own CSV or TXT file")
         print("3. Manually type in song names")
-        print("4. Exit from SpotiStream")
+        print("4. Use a YouTube playlist")
+        print("5. Exit from SpotiStream")
 
-        choice = input("Please enter 1, 2, 3 or 4: ").strip()
+        choice = input("Please enter 1, 2, 3, 4 or 5: ").strip()
 
         if choice == '1':
             # Authenticate Spotify credentials only when option 1 is selected
@@ -75,13 +82,17 @@ def main():
                 download_song(song_name, artist_name)
 
         elif choice == '4':
+            playlist_url = input("Enter the YouTube playlist URL: ").strip()
+            download_songs_from_youtube_playlist(playlist_url)
+
+        elif choice == '5':
             print("\n    *-------------------------------*    ")
             print("Thank you for using SpotiStream Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
 
         else:
-            print("Invalid choice. Please enter 1, 2, 3 or 4.")
+            print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
             print("\n    *-------------------------------*    ")
