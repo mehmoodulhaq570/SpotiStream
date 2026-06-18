@@ -10,3 +10,4 @@ dist/
 build/
 spoti_stream.egg-info
 songs/
+videos/

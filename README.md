@@ -14,7 +14,7 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 ## Features
 - **Spotify Playlist Download**: Fetch and download songs directly from your Spotify playlists.
 - **YouTube Playlist Download**: Provide a YouTube playlist URL, fetch each video title, and download matching MP3 files one by one.
-- **Video Download**: Search by song and artist, then download the matching YouTube video as MP4.
+- **Video Download**: Search by song and artist, then download the matching YouTube video.
 - **Video Quality Selection**: Choose best available, 1080p, 720p, 480p, or 360p.
 - **Custom File Inputs**: Users can input songs via CSV or TXT files for downloading songs in bulk.
 - **Manual Song Input**: Option to manually type in song names and artists for direct downloads.
@@ -27,7 +27,7 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 - **Select a Playlist**: Once authenticated, SpotiStream fetches your playlists, allowing you to select which one to download.
 - **Download from YouTube Playlist**: Paste a YouTube playlist URL and SpotiStream will use the video titles to download songs one by one.
 - **Download Videos**: Enter a song name and artist, choose a quality, and save the video into the `videos` folder.
-- **Download YouTube Playlist Videos**: Paste a YouTube playlist URL, choose a quality, and download each video as MP4.
+- **Download YouTube Playlist Videos**: Paste a YouTube playlist URL, choose a quality, and download each video.
 - **Download from CSV/TXT**: Alternatively, you can upload a CSV or TXT file of songs and artists for downloading in bulk.
 - **Manual Song Input**: If you prefer, you can manually input the song name and artist for downloading.
 
