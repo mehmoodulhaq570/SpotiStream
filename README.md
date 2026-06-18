@@ -14,6 +14,8 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 ## Features
 - **Spotify Playlist Download**: Fetch and download songs directly from your Spotify playlists.
 - **YouTube Playlist Download**: Provide a YouTube playlist URL, fetch each video title, and download matching MP3 files one by one.
+- **Video Download**: Search by song and artist, then download the matching YouTube video as MP4.
+- **Video Quality Selection**: Choose best available, 1080p, 720p, 480p, or 360p.
 - **Custom File Inputs**: Users can input songs via CSV or TXT files for downloading songs in bulk.
 - **Manual Song Input**: Option to manually type in song names and artists for direct downloads.
 - **Auto-Save Credentials**: Automatically saves Spotify credentials for faster authentication in future sessions.
@@ -24,6 +26,8 @@ The idea for SpotiStream came after my Spotify account was blocked due to a paym
 - **Authenticate with Spotify**: When downloading from a Spotify playlist, you will be prompted to authenticate your Spotify account by providing your client ID and secret.
 - **Select a Playlist**: Once authenticated, SpotiStream fetches your playlists, allowing you to select which one to download.
 - **Download from YouTube Playlist**: Paste a YouTube playlist URL and SpotiStream will use the video titles to download songs one by one.
+- **Download Videos**: Enter a song name and artist, choose a quality, and save the video into the `videos` folder.
+- **Download YouTube Playlist Videos**: Paste a YouTube playlist URL, choose a quality, and download each video as MP4.
 - **Download from CSV/TXT**: Alternatively, you can upload a CSV or TXT file of songs and artists for downloading in bulk.
 - **Manual Song Input**: If you prefer, you can manually input the song name and artist for downloading.
 
@@ -83,6 +87,8 @@ The program will prompt you to choose one of the following options:
 - **Download from CSV/TXT**: Enter a file path to download songs from a `.csv` or `.txt` file.
 - **Manual Song Input**: Manually input the song name and artist.
 - **Download from YouTube Playlist**: Enter a YouTube playlist URL to download each listed song.
+- **Download Video by Song Name**: Enter a song and artist, then choose the video quality.
+- **Download Videos from YouTube Playlist**: Enter a YouTube playlist URL and choose the video quality.
 - **Exit**: Exit the application.
 
 ## Error Handling and Timeouts

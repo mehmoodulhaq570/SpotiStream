@@ -6,8 +6,24 @@ from .downloader import (
     download_songs_from_csv,
     download_songs_from_txt,
     download_songs_from_youtube_playlist,
+    download_videos_from_youtube_playlist,
     download_song,
+    download_video_by_song,
 )
+
+
+def ask_video_quality():
+    print("\nChoose video quality:")
+    print("1. Best available / HD")
+    print("2. 1080p")
+    print("3. 720p")
+    print("4. 480p")
+    print("5. 360p")
+    quality = input("Please enter 1, 2, 3, 4 or 5: ").strip()
+    if quality not in ('1', '2', '3', '4', '5'):
+        print("Invalid quality. Using 720p.")
+        return '720'
+    return quality
 
 
 def main():
@@ -23,9 +39,11 @@ def main():
         print("2. Provide your own CSV or TXT file")
         print("3. Manually type in song names")
         print("4. Use a YouTube playlist")
-        print("5. Exit from SpotiStream")
+        print("5. Download a video by song name")
+        print("6. Download videos from a YouTube playlist")
+        print("7. Exit from SpotiStream")
 
-        choice = input("Please enter 1, 2, 3, 4 or 5: ").strip()
+        choice = input("Please enter 1, 2, 3, 4, 5, 6 or 7: ").strip()
 
         if choice == '1':
             # Authenticate Spotify credentials only when option 1 is selected
@@ -86,13 +104,24 @@ def main():
             download_songs_from_youtube_playlist(playlist_url)
 
         elif choice == '5':
+            song_name = input("Enter the song name: ").strip()
+            artist_name = input(f"Enter the artist name for '{song_name}': ").strip()
+            quality = ask_video_quality()
+            download_video_by_song(song_name, artist_name, quality)
+
+        elif choice == '6':
+            playlist_url = input("Enter the YouTube playlist URL: ").strip()
+            quality = ask_video_quality()
+            download_videos_from_youtube_playlist(playlist_url, quality)
+
+        elif choice == '7':
             print("\n    *-------------------------------*    ")
             print("Thank you for using SpotiStream Music! Goodbye!")
             print("    *-------------------------------*    ")
             break
 
         else:
-            print("Invalid choice. Please enter 1, 2, 3, 4 or 5.")
+            print("Invalid choice. Please enter 1, 2, 3, 4, 5, 6 or 7.")
 
         if input("Do you want to continue? (y/n): ").strip().lower() != 'y':
             print("\n    *-------------------------------*    ")

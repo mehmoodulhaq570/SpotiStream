@@ -18,6 +18,11 @@ def get_mp3_file_path(song_name, artist_name, download_dir):
     return os.path.join(download_dir, f"{sanitized_song_name}.mp3")
 
 
+def get_video_file_path(song_name, artist_name, download_dir):
+    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
+    return os.path.join(download_dir, f"{sanitized_song_name}.mp4")
+
+
 def normalize_song_key(song_name, artist_name):
     return re.sub(r'\s+', ' ', f"{song_name} by {artist_name}".casefold()).strip()
 
@@ -57,7 +62,7 @@ def show_download_progress(progress):
         eta = progress.get('_eta_str', '').strip()
         print(f"\rDownloading: {percent} | Speed: {speed} | ETA: {eta}", end='', flush=True)
     elif progress.get('status') == 'finished':
-        print("\rDownload complete. Converting to MP3...          ")
+        print("\rDownload complete. Finalizing file...          ")
 
 
 def build_ydl_options(song_name, artist_name, download_dir):
@@ -89,6 +94,50 @@ def build_ydl_options(song_name, artist_name, download_dir):
     }
 
 
+def get_video_format(quality):
+    quality = str(quality).strip().lower()
+    if quality in ('best', 'hd', '1', ''):
+        return 'bestvideo+bestaudio/best'
+
+    quality_map = {
+        '2': '1080',
+        '3': '720',
+        '4': '480',
+        '5': '360',
+        '1080': '1080',
+        '720': '720',
+        '480': '480',
+        '360': '360',
+    }
+    height = quality_map.get(quality, '720')
+    return f'bestvideo[height<={height}]+bestaudio/best[height<={height}]/best'
+
+
+def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'):
+    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
+    return {
+        'format': get_video_format(quality),
+        'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.%(ext)s"),
+        'noplaylist': True,
+        'quiet': True,
+        'no_warnings': True,
+        'ffmpeg_location': imageio_ffmpeg.get_ffmpeg_exe(),
+        'merge_output_format': 'mp4',
+        'progress_hooks': [show_download_progress],
+        'retries': 3,
+        'fragment_retries': 3,
+        'continuedl': True,
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
+        },
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'ios', 'web'],
+            },
+        },
+    }
+
+
 def download_audio(source, song_name, artist_name, download_dir='songs', message=None):
     mp3_file_path = get_mp3_file_path(song_name, artist_name, download_dir)
     mp3_file_name = os.path.basename(mp3_file_path)
@@ -116,6 +165,33 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
     return False
 
 
+def download_video(source, song_name, artist_name, quality='best', download_dir='videos', message=None):
+    video_file_path = get_video_file_path(song_name, artist_name, download_dir)
+    video_file_name = os.path.basename(video_file_path)
+    os.makedirs(download_dir, exist_ok=True)
+
+    if os.path.exists(video_file_path):
+        print(f"'{song_name} by {artist_name}' is already downloaded as MP4. Skipping...")
+        return True
+
+    ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality)
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        try:
+            if message:
+                print(message)
+            ydl.download([source])
+            print(f"Downloaded video: {video_file_name}")
+            return True
+        except yt_dlp.utils.DownloadError as e:
+            print(f"Video download error for {song_name} by {artist_name}: {e}")
+            if 'HTTP Error 403' in str(e):
+                print("Tip: run 'python -m pip install -U yt-dlp' if this keeps happening. YouTube often returns 403 when yt-dlp is outdated.")
+        except Exception as e:
+            print(f"An error occurred while downloading video {song_name} by {artist_name}: {e}")
+    return False
+
+
 def download_song(song_name, artist_name, download_dir='songs'):
     query = f"{song_name} {artist_name} audio"
     return download_audio(
@@ -124,6 +200,18 @@ def download_song(song_name, artist_name, download_dir='songs'):
         artist_name,
         download_dir,
         f"Searching and downloading: {query}",
+    )
+
+
+def download_video_by_song(song_name, artist_name, quality='best', download_dir='videos'):
+    query = f"{song_name} {artist_name} official music video"
+    return download_video(
+        f"ytsearch1:{query}",
+        song_name,
+        artist_name,
+        quality,
+        download_dir,
+        f"Searching and downloading video: {query}",
     )
 
 
@@ -136,6 +224,79 @@ def download_songs_from_playlist(sp, playlist_id, playlist_name, download_dir='s
             download_song(song_name, artist_name, download_dir)
     else:
         print(f"No songs found in playlist: {playlist_name}")
+
+
+def download_videos_from_youtube_playlist(playlist_url, quality='best', download_dir='videos'):
+    ydl_opts = {
+        'extract_flat': True,
+        'quiet': True,
+        'no_warnings': True,
+        'ignoreerrors': True,
+    }
+
+    stop_event = threading.Event()
+    progress_thread = threading.Thread(
+        target=show_busy_progress,
+        args=("Fetching YouTube video playlist from online...", stop_event),
+        daemon=True,
+    )
+    progress_thread.start()
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            playlist_info = ydl.extract_info(playlist_url, download=False)
+    except yt_dlp.utils.DownloadError as e:
+        print(f"\nYouTube playlist error: {e}")
+        return
+    except Exception as e:
+        print(f"\nAn error occurred while reading the YouTube playlist: {e}")
+        return
+    finally:
+        stop_event.set()
+        progress_thread.join()
+
+    entries = playlist_info.get('entries', []) if playlist_info else []
+    entries = [entry for entry in entries if entry]
+
+    if not entries:
+        print("No videos found in this YouTube playlist.")
+        return
+
+    playlist_title = playlist_info.get('title', 'YouTube Playlist')
+    print(f"Found {len(entries)} videos in '{playlist_title}'.")
+
+    downloaded_videos = set()
+    for index, entry in enumerate(entries, start=1):
+        title = entry.get('title') or f'Video {index}'
+        uploader = entry.get('uploader') or entry.get('channel')
+        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+        video_key = normalize_song_key(song_name, artist_name)
+
+        if video_key in downloaded_videos:
+            print(f"\n[{index}/{len(entries)}] Duplicate video already handled. Skipping: {song_name} by {artist_name}")
+            continue
+
+        downloaded_videos.add(video_key)
+        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
+
+        video_url = entry.get('webpage_url') or entry.get('url')
+        if video_url and not video_url.startswith('http'):
+            video_url = f"https://www.youtube.com/watch?v={video_url}"
+
+        if video_url:
+            success = download_video(
+                video_url,
+                song_name,
+                artist_name,
+                quality,
+                download_dir,
+                f"Downloading playlist video: {title}",
+            )
+            if not success:
+                print("Trying again with YouTube search...")
+                download_video_by_song(song_name, artist_name, quality, download_dir)
+        else:
+            download_video_by_song(song_name, artist_name, quality, download_dir)
 
 
 def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
