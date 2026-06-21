@@ -193,6 +193,51 @@ def get_video_height_limit(quality):
     return quality_map.get(quality)
 
 
+def get_format_quality_height(video_format):
+    note_text = ' '.join(
+        str(video_format.get(key) or '')
+        for key in ('format_note', 'resolution', 'format')
+    )
+    note_match = re.search(r'(?<!\d)(2160|1440|1080|720|480|360|240|144)p', note_text, re.IGNORECASE)
+    if note_match:
+        return int(note_match.group(1))
+
+    width = get_format_value(video_format, 'width')
+    height = get_format_value(video_format, 'height')
+
+    width_quality_map = (
+        (2160, 3840),
+        (1440, 2560),
+        (1080, 1920),
+        (720, 1280),
+        (480, 854),
+        (360, 640),
+        (240, 426),
+        (144, 256),
+    )
+    for quality_height, min_width in width_quality_map:
+        if width >= min_width * 0.95:
+            return quality_height
+
+    return height
+
+
+def get_format_resolution_label(video_format):
+    width = video_format.get('width')
+    height = video_format.get('height')
+    if width and height:
+        return f"{width}x{height}"
+    return f"{height}p" if height else "unknown resolution"
+
+
+def get_format_quality_label(video_format):
+    quality_height = get_format_quality_height(video_format)
+    resolution = get_format_resolution_label(video_format)
+    if quality_height:
+        return f"{quality_height}p class ({resolution})"
+    return resolution
+
+
 def get_ydl_extract_options(extract_flat=False, noplaylist=False):
     return {
         'quiet': True,
@@ -303,7 +348,9 @@ def get_stream_groups(info):
     ]
 
     sort_key = lambda stream: (
+        get_format_quality_height(stream),
         get_format_value(stream, 'height'),
+        get_format_value(stream, 'width'),
         get_format_value(stream, 'fps'),
         get_format_value(stream, 'tbr'),
         get_format_value(stream, 'vbr'),
@@ -329,7 +376,7 @@ def select_video_stream(streams, quality):
 
     allowed_streams = [
         stream for stream in video_streams
-        if stream.get('height') and stream.get('height') <= height_limit
+        if get_format_quality_height(stream) and get_format_quality_height(stream) <= height_limit
     ]
     return allowed_streams[0] if allowed_streams else None
 
@@ -343,7 +390,7 @@ def select_muxed_stream(streams, quality):
 
     allowed_streams = [
         stream for stream in muxed_streams
-        if stream.get('height') and stream.get('height') <= height_limit
+        if get_format_quality_height(stream) and get_format_quality_height(stream) <= height_limit
     ]
     return allowed_streams[0] if allowed_streams else None
 
@@ -366,7 +413,7 @@ def select_download_streams(info, quality):
         return None, None, None, None
 
     prefer_muxed = get_video_height_limit(quality) is not None
-    if prefer_muxed and selected_muxed and get_format_value(selected_muxed, 'height') >= get_format_value(selected_video, 'height'):
+    if prefer_muxed and selected_muxed and get_format_quality_height(selected_muxed) >= get_format_quality_height(selected_video):
         return selected_muxed.get('format_id'), selected_muxed, None, 'muxed'
 
     if selected_audio:
@@ -469,7 +516,7 @@ def inspect_video_source(source, quality):
         print(
             "Selected video stream: "
             f"{best_video.get('format_id')} | "
-            f"{best_video.get('height')}p | "
+            f"{get_format_quality_label(best_video)} | "
             f"{best_video.get('ext')} | "
             f"{best_video.get('vcodec')}"
         )
