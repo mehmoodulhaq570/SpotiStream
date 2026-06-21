@@ -499,6 +499,24 @@ def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'
     }
 
 
+def is_http_403_error(error):
+    return 'HTTP Error 403' in str(error) or '403: Forbidden' in str(error)
+
+
+def get_video_retry_formats(selected_format, quality):
+    automatic_format = get_video_format(quality)
+    return [
+        ('yt-dlp automatic quality selector', automatic_format),
+        ('MP4 up to 1080p', 'bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4][height<=1080]/best[height<=1080]'),
+        ('best muxed stream', 'best[ext=mp4]/best'),
+    ]
+
+
+def refresh_selected_video_format(source, quality):
+    selected_format, refreshed_source, _ = inspect_video_source(source, quality)
+    return selected_format, refreshed_source
+
+
 def merge(video_path, audio_path, output_path):
     import subprocess
     command = [
@@ -558,24 +576,53 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
         print(f"'{video_file_name}' is already downloaded as video. Skipping: {os.path.basename(existing_video_file)}")
         return True
 
-    ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality, final_output_name)
     if selected_format:
-        ydl_opts['format'] = selected_format
         source = resolved_source
     else:
         print("Could not choose an exact HD stream. Falling back to yt-dlp automatic best format.")
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
-            ydl.download([source])
-            print(f"Downloaded video: {video_file_name}")
-            return True
-        except yt_dlp.utils.DownloadError as e:
-            print(f"Video download error for {song_name} by {artist_name}: {e}")
-            if 'HTTP Error 403' in str(e):
-                print("Tip: run 'python -m pip install -U yt-dlp' if this keeps happening. YouTube often returns 403 when yt-dlp is outdated.")
-        except Exception as e:
-            print(f"An error occurred while downloading video {song_name} by {artist_name}: {e}")
+    last_error = None
+    retry_source = source
+    retry_formats = get_video_retry_formats(selected_format, quality)
+    selected_stream_retry_count = 3 if selected_format else 0
+
+    for attempt_index in range(1, selected_stream_retry_count + len(retry_formats) + 1):
+        if attempt_index <= selected_stream_retry_count:
+            attempt_label = f"refreshed selected HD stream attempt {attempt_index}"
+            if attempt_index > 1:
+                refreshed_format, refreshed_source = refresh_selected_video_format(source, quality)
+                if refreshed_format:
+                    selected_format = refreshed_format
+                    retry_source = refreshed_source
+            format_selector = selected_format
+        else:
+            attempt_label, format_selector = retry_formats[attempt_index - selected_stream_retry_count - 1]
+
+        ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality, final_output_name)
+        ydl_opts['format'] = format_selector
+
+        if attempt_index > 1:
+            print(f"Retrying same video with {attempt_label}...")
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            try:
+                ydl.download([retry_source])
+                print(f"Downloaded video: {video_file_name}")
+                return True
+            except yt_dlp.utils.DownloadError as e:
+                last_error = e
+                print(f"Video download error using {attempt_label}: {e}")
+                if not is_http_403_error(e):
+                    break
+            except Exception as e:
+                last_error = e
+                print(f"An error occurred while downloading video {song_name} by {artist_name}: {e}")
+                break
+
+    if last_error:
+        print(f"Video download error for {song_name} by {artist_name}: {last_error}")
+        if is_http_403_error(last_error):
+            print("All same-video retry formats failed with HTTP 403. Try updating yt-dlp if this keeps happening: python -m pip install -U yt-dlp")
     return False
 
 
@@ -624,8 +671,7 @@ def download_videos_from_youtube_input(query, quality='best', download_dir='vide
         print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
         success = download_video_entry(entry, quality, download_dir)
         if not success:
-            print("Trying again with YouTube search...")
-            download_video_by_song(song_name, artist_name, quality, download_dir)
+            print("Skipping this video after same-video retry formats failed.")
 
 
 def download_song(song_name, artist_name, download_dir='songs'):
