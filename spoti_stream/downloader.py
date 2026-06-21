@@ -9,6 +9,10 @@ import imageio_ffmpeg
 import yt_dlp
 
 
+YOUTUBE_HEADERS = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
+}
+
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
@@ -18,7 +22,7 @@ def get_mp3_file_path(song_name, artist_name, download_dir):
     return os.path.join(download_dir, f"{sanitized_song_name}.mp3")
 
 
-def get_video_file_path(song_name, artist_name, download_dir, extension='mkv'):
+def get_video_file_path(song_name, artist_name, download_dir, extension='mp4'):
     sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
     return os.path.join(download_dir, f"{sanitized_song_name}.{extension}")
 
@@ -86,14 +90,7 @@ def build_ydl_options(song_name, artist_name, download_dir):
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
-        'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
-        },
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios', 'web'],
-            },
-        },
+        'http_headers': YOUTUBE_HEADERS,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -108,13 +105,18 @@ def get_video_format(quality):
         return 'bestvideo*+bestaudio/best'
 
     quality_map = {
-        '2': '1080',
-        '3': '720',
-        '4': '480',
-        '5': '360',
+        '2': '2160',
+        '4k': '2160',
+        '2160': '2160',
+        '3': '1440',
+        '1440': '1440',
+        '4': '1080',
         '1080': '1080',
+        '5': '720',
         '720': '720',
+        '6': '480',
         '480': '480',
+        '7': '360',
         '360': '360',
     }
     height = quality_map.get(quality, '720')
@@ -127,13 +129,18 @@ def get_video_quality_label(quality):
         '1': 'best available / HD',
         'best': 'best available / HD',
         'hd': 'best available / HD',
-        '2': '1080p',
+        '2': '4K',
+        '4k': '4K',
+        '2160': '4K',
+        '3': '1440p',
+        '1440': '1440p',
+        '4': '1080p',
         '1080': '1080p',
-        '3': '720p',
+        '5': '720p',
         '720': '720p',
-        '4': '480p',
+        '6': '480p',
         '480': '480p',
-        '5': '360p',
+        '7': '360p',
         '360': '360p',
     }
     return quality_map.get(quality, '720p')
@@ -142,16 +149,207 @@ def get_video_quality_label(quality):
 def get_video_height_limit(quality):
     quality = str(quality).strip().lower()
     quality_map = {
-        '2': 1080,
+        '2': 2160,
+        '4k': 2160,
+        '2160': 2160,
+        '3': 1440,
+        '1440': 1440,
+        '4': 1080,
         '1080': 1080,
-        '3': 720,
+        '5': 720,
         '720': 720,
-        '4': 480,
+        '6': 480,
         '480': 480,
-        '5': 360,
+        '7': 360,
         '360': 360,
     }
     return quality_map.get(quality)
+
+
+def get_ydl_extract_options(extract_flat=False, noplaylist=False):
+    return {
+        'quiet': True,
+        'no_warnings': True,
+        'ignoreerrors': True,
+        'extract_flat': extract_flat,
+        'noplaylist': noplaylist,
+        'http_headers': YOUTUBE_HEADERS,
+    }
+
+
+def is_url(query):
+    return bool(re.match(r'^(https?://|www\.)', query.strip(), flags=re.IGNORECASE))
+
+
+def normalize_youtube_url(url):
+    url = url.strip()
+    if url.startswith('www.'):
+        return f"https://{url}"
+    return url
+
+
+def get_video_url(entry):
+    url = entry.get('webpage_url') or entry.get('original_url') or entry.get('url')
+    if url and not url.startswith('http'):
+        url = f"https://www.youtube.com/watch?v={url}"
+    return url
+
+
+def flatten_video_entries(info):
+    if not info:
+        return []
+
+    if info.get('entries') is None:
+        return [info]
+
+    entries = []
+    for entry in info.get('entries') or []:
+        if not entry:
+            continue
+        if entry.get('entries'):
+            entries.extend(flatten_video_entries(entry))
+        else:
+            entries.append(entry)
+    return entries
+
+
+def resolve_input(query):
+    """
+    Accepts a YouTube URL, playlist URL, channel URL, or search text.
+    Returns a list of video metadata dictionaries.
+    """
+    source = normalize_youtube_url(query)
+    if not is_url(source):
+        source = f"ytsearch10:{query}"
+
+    ydl_opts = get_ydl_extract_options(extract_flat=True)
+    stop_event = threading.Event()
+    progress_thread = threading.Thread(
+        target=show_busy_progress,
+        args=("Resolving YouTube input...", stop_event),
+        daemon=True,
+    )
+    progress_thread.start()
+
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(source, download=False)
+    except yt_dlp.utils.DownloadError as e:
+        print(f"\nCould not resolve YouTube input: {e}")
+        return []
+    except Exception as e:
+        print(f"\nAn error occurred while resolving YouTube input: {e}")
+        return []
+    finally:
+        stop_event.set()
+        progress_thread.join()
+
+    return flatten_video_entries(info)
+
+
+def get_stream_info(url):
+    ydl_opts = get_ydl_extract_options(extract_flat=False, noplaylist=True)
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        return ydl.extract_info(url, download=False)
+
+
+def get_stream_groups(info):
+    formats = info.get('formats') or []
+    video_streams = [
+        video_format
+        for video_format in formats
+        if video_format.get('vcodec') != 'none'
+        and video_format.get('acodec') == 'none'
+        and video_format.get('height')
+    ]
+    audio_streams = [
+        audio_format
+        for audio_format in formats
+        if audio_format.get('acodec') != 'none' and audio_format.get('vcodec') == 'none'
+    ]
+    muxed_streams = [
+        muxed_format
+        for muxed_format in formats
+        if muxed_format.get('vcodec') != 'none'
+        and muxed_format.get('acodec') != 'none'
+        and muxed_format.get('height')
+    ]
+
+    sort_key = lambda stream: (
+        get_format_value(stream, 'height'),
+        get_format_value(stream, 'fps'),
+        get_format_value(stream, 'tbr'),
+        get_format_value(stream, 'vbr'),
+    )
+
+    return {
+        'video': sorted(video_streams, key=sort_key, reverse=True),
+        'audio': sorted(audio_streams, key=lambda stream: (
+            get_format_value(stream, 'abr'),
+            get_format_value(stream, 'tbr'),
+            get_format_value(stream, 'filesize'),
+        ), reverse=True),
+        'muxed': sorted(muxed_streams, key=sort_key, reverse=True),
+    }
+
+
+def select_video_stream(streams, quality):
+    height_limit = get_video_height_limit(quality)
+    video_streams = streams.get('video') or []
+
+    if height_limit is None:
+        return video_streams[0] if video_streams else None
+
+    allowed_streams = [
+        stream for stream in video_streams
+        if stream.get('height') and stream.get('height') <= height_limit
+    ]
+    return allowed_streams[0] if allowed_streams else None
+
+
+def select_muxed_stream(streams, quality):
+    height_limit = get_video_height_limit(quality)
+    muxed_streams = streams.get('muxed') or []
+
+    if height_limit is None:
+        return muxed_streams[0] if muxed_streams else None
+
+    allowed_streams = [
+        stream for stream in muxed_streams
+        if stream.get('height') and stream.get('height') <= height_limit
+    ]
+    return allowed_streams[0] if allowed_streams else None
+
+
+def select_audio_stream(streams):
+    audio_streams = streams.get('audio') or []
+    return audio_streams[0] if audio_streams else None
+
+
+def select_download_streams(info, quality):
+    streams = get_stream_groups(info)
+    selected_video = select_video_stream(streams, quality)
+    selected_audio = select_audio_stream(streams)
+    selected_muxed = select_muxed_stream(streams, quality)
+
+    if not selected_video and selected_muxed:
+        return selected_muxed.get('format_id'), selected_muxed, None, 'muxed'
+
+    if not selected_video:
+        return None, None, None, None
+
+    prefer_muxed = get_video_height_limit(quality) is not None
+    if prefer_muxed and selected_muxed and get_format_value(selected_muxed, 'height') >= get_format_value(selected_video, 'height'):
+        return selected_muxed.get('format_id'), selected_muxed, None, 'muxed'
+
+    if selected_audio:
+        return f"{selected_video.get('format_id')}+{selected_audio.get('format_id')}", selected_video, selected_audio, 'dash'
+
+    if selected_video.get('acodec') != 'none':
+        return selected_video.get('format_id'), selected_video, None, 'muxed'
+
+    fallback_format = get_video_format(quality)
+    return f"{selected_video.get('format_id')}+bestaudio/{fallback_format}", selected_video, None, 'dash'
 
 
 def get_format_max_height(video_info):
@@ -164,17 +362,12 @@ def get_format_max_height(video_info):
 
 
 def get_best_video_search_result(query, max_results=5):
-    ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-        'extract_flat': False,
-    }
+    ydl_opts = get_ydl_extract_options(extract_flat=True)
 
     stop_event = threading.Event()
     progress_thread = threading.Thread(
         target=show_busy_progress,
-        args=(f"Checking top {max_results} YouTube results for HD video...", stop_event),
+        args=(f"Finding top YouTube result from {max_results} matches...", stop_event),
         daemon=True,
     )
     progress_thread.start()
@@ -198,19 +391,11 @@ def get_best_video_search_result(query, max_results=5):
     if not entries:
         return None
 
-    best_entry = max(entries, key=get_format_max_height)
-    best_height = get_format_max_height(best_entry)
+    best_entry = entries[0]
     title = best_entry.get('title', 'Unknown title')
-    url = best_entry.get('webpage_url') or best_entry.get('url')
-
-    if url and not url.startswith('http'):
-        url = f"https://www.youtube.com/watch?v={url}"
+    url = get_video_url(best_entry)
 
     print(f"Selected result: {title}")
-    if best_height:
-        print(f"Highest available quality found: {best_height}p")
-    else:
-        print("Could not detect available quality before download.")
 
     return url
 
@@ -221,72 +406,11 @@ def get_format_value(video_format, key, default=0):
 
 
 def choose_exact_video_format(video_info, quality):
-    height_limit = get_video_height_limit(quality)
-    formats = video_info.get('formats', [])
-
-    video_formats = [
-        video_format
-        for video_format in formats
-        if video_format.get('vcodec') != 'none'
-        and video_format.get('height')
-        and (height_limit is None or video_format.get('height') <= height_limit)
-    ]
-    audio_formats = [
-        audio_format
-        for audio_format in formats
-        if audio_format.get('acodec') != 'none'
-        and audio_format.get('vcodec') == 'none'
-    ]
-
-    if not video_formats:
-        return None, None, None
-
-    best_video = max(
-        video_formats,
-        key=lambda video_format: (
-            get_format_value(video_format, 'height'),
-            get_format_value(video_format, 'fps'),
-            get_format_value(video_format, 'tbr'),
-            get_format_value(video_format, 'vbr'),
-        ),
-    )
-    best_audio = max(
-        audio_formats,
-        key=lambda audio_format: (
-            get_format_value(audio_format, 'abr'),
-            get_format_value(audio_format, 'tbr'),
-            get_format_value(audio_format, 'filesize'),
-        ),
-        default=None,
-    )
-
-    selected_format = best_video.get('format_id')
-    if best_audio:
-        selected_format = f"{selected_format}+{best_audio.get('format_id')}"
-
-    fallback_format = get_video_format(quality)
-    video_format_id = best_video.get('format_id')
-    if video_format_id:
-        selected_format = f"{selected_format}/{video_format_id}+bestaudio/{fallback_format}"
-
+    selected_format, best_video, best_audio, _ = select_download_streams(video_info, quality)
     return selected_format, best_video, best_audio
 
 
 def inspect_video_source(source, quality):
-    ydl_opts = {
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-        'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
-        },
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios', 'web'],
-            },
-        },
-    }
-
     stop_event = threading.Event()
     progress_thread = threading.Thread(
         target=show_busy_progress,
@@ -296,8 +420,7 @@ def inspect_video_source(source, quality):
     progress_thread.start()
 
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            video_info = ydl.extract_info(source, download=False)
+        video_info = get_stream_info(source)
     except yt_dlp.utils.DownloadError as e:
         print(f"\nCould not inspect video formats: {e}")
         return None, None
@@ -343,22 +466,28 @@ def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'
         'quiet': True,
         'no_warnings': True,
         'ffmpeg_location': imageio_ffmpeg.get_ffmpeg_exe(),
-        'merge_output_format': 'mkv',
+        'merge_output_format': 'mp4',
         'format_sort': ['res', 'fps', 'br'],
         'format_sort_force': True,
         'progress_hooks': [show_download_progress],
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
-        'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
-        },
-        'extractor_args': {
-            'youtube': {
-                'player_client': ['android', 'ios', 'web'],
-            },
-        },
+        'http_headers': YOUTUBE_HEADERS,
     }
+
+
+def merge(video_path, audio_path, output_path):
+    import subprocess
+    command = [
+        imageio_ffmpeg.get_ffmpeg_exe(),
+        '-i', video_path,
+        '-i', audio_path,
+        '-c:v', 'copy',
+        '-c:a', 'aac',
+        output_path,
+    ]
+    subprocess.run(command, check=True)
 
 
 def download_audio(source, song_name, artist_name, download_dir='songs', message=None):
@@ -424,6 +553,53 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
     return False
 
 
+def download_video_entry(entry, quality='best', download_dir='videos'):
+    title = entry.get('title') or entry.get('fulltitle') or 'YouTube video'
+    uploader = entry.get('uploader') or entry.get('channel') or 'YouTube'
+    song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+    video_url = get_video_url(entry)
+
+    if not video_url:
+        print(f"Could not find a playable URL for: {title}")
+        return False
+
+    return download_video(
+        video_url,
+        song_name,
+        artist_name,
+        quality,
+        download_dir,
+        f"Downloading YouTube video: {title}",
+    )
+
+
+def download_videos_from_youtube_input(query, quality='best', download_dir='videos'):
+    entries = resolve_input(query)
+    if not entries:
+        print("No YouTube videos found.")
+        return
+
+    print(f"Resolved {len(entries)} YouTube video(s).")
+    downloaded_videos = set()
+
+    for index, entry in enumerate(entries, start=1):
+        title = entry.get('title') or f'Video {index}'
+        uploader = entry.get('uploader') or entry.get('channel')
+        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+        video_key = normalize_song_key(song_name, artist_name)
+
+        if video_key in downloaded_videos:
+            print(f"\n[{index}/{len(entries)}] Duplicate video already handled. Skipping: {song_name} by {artist_name}")
+            continue
+
+        downloaded_videos.add(video_key)
+        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
+        success = download_video_entry(entry, quality, download_dir)
+        if not success:
+            print("Trying again with YouTube search...")
+            download_video_by_song(song_name, artist_name, quality, download_dir)
+
+
 def download_song(song_name, artist_name, download_dir='songs'):
     query = f"{song_name} {artist_name} audio"
     return download_audio(
@@ -463,116 +639,17 @@ def download_songs_from_playlist(sp, playlist_id, playlist_name, download_dir='s
 
 
 def download_videos_from_youtube_playlist(playlist_url, quality='best', download_dir='videos'):
-    ydl_opts = {
-        'extract_flat': True,
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-    }
-
-    stop_event = threading.Event()
-    progress_thread = threading.Thread(
-        target=show_busy_progress,
-        args=("Fetching YouTube video playlist from online...", stop_event),
-        daemon=True,
-    )
-    progress_thread.start()
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            playlist_info = ydl.extract_info(playlist_url, download=False)
-    except yt_dlp.utils.DownloadError as e:
-        print(f"\nYouTube playlist error: {e}")
-        return
-    except Exception as e:
-        print(f"\nAn error occurred while reading the YouTube playlist: {e}")
-        return
-    finally:
-        stop_event.set()
-        progress_thread.join()
-
-    entries = playlist_info.get('entries', []) if playlist_info else []
-    entries = [entry for entry in entries if entry]
-
-    if not entries:
-        print("No videos found in this YouTube playlist.")
-        return
-
-    playlist_title = playlist_info.get('title', 'YouTube Playlist')
-    print(f"Found {len(entries)} videos in '{playlist_title}'.")
-
-    downloaded_videos = set()
-    for index, entry in enumerate(entries, start=1):
-        title = entry.get('title') or f'Video {index}'
-        uploader = entry.get('uploader') or entry.get('channel')
-        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
-        video_key = normalize_song_key(song_name, artist_name)
-
-        if video_key in downloaded_videos:
-            print(f"\n[{index}/{len(entries)}] Duplicate video already handled. Skipping: {song_name} by {artist_name}")
-            continue
-
-        downloaded_videos.add(video_key)
-        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
-
-        video_url = entry.get('webpage_url') or entry.get('url')
-        if video_url and not video_url.startswith('http'):
-            video_url = f"https://www.youtube.com/watch?v={video_url}"
-
-        if video_url:
-            success = download_video(
-                video_url,
-                song_name,
-                artist_name,
-                quality,
-                download_dir,
-                f"Downloading playlist video: {title}",
-            )
-            if not success:
-                print("Trying again with YouTube search...")
-                download_video_by_song(song_name, artist_name, quality, download_dir)
-        else:
-            download_video_by_song(song_name, artist_name, quality, download_dir)
+    download_videos_from_youtube_input(playlist_url, quality, download_dir)
 
 
 def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
-    ydl_opts = {
-        'extract_flat': True,
-        'quiet': True,
-        'no_warnings': True,
-        'ignoreerrors': True,
-    }
-
-    stop_event = threading.Event()
-    progress_thread = threading.Thread(
-        target=show_busy_progress,
-        args=("Fetching YouTube playlist from online...", stop_event),
-        daemon=True,
-    )
-    progress_thread.start()
-
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            playlist_info = ydl.extract_info(playlist_url, download=False)
-    except yt_dlp.utils.DownloadError as e:
-        print(f"\nYouTube playlist error: {e}")
-        return
-    except Exception as e:
-        print(f"\nAn error occurred while reading the YouTube playlist: {e}")
-        return
-    finally:
-        stop_event.set()
-        progress_thread.join()
-
-    entries = playlist_info.get('entries', []) if playlist_info else []
-    entries = [entry for entry in entries if entry]
+    entries = resolve_input(playlist_url)
 
     if not entries:
-        print("No videos found in this YouTube playlist.")
+        print("No videos found for this YouTube input.")
         return
 
-    playlist_title = playlist_info.get('title', 'YouTube Playlist')
-    print(f"Found {len(entries)} videos in '{playlist_title}'.")
+    print(f"Resolved {len(entries)} YouTube video(s).")
 
     downloaded_songs = set()
     for index, entry in enumerate(entries, start=1):
@@ -588,9 +665,7 @@ def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
         downloaded_songs.add(song_key)
         print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
 
-        video_url = entry.get('webpage_url') or entry.get('url')
-        if video_url and not video_url.startswith('http'):
-            video_url = f"https://www.youtube.com/watch?v={video_url}"
+        video_url = get_video_url(entry)
 
         if video_url:
             success = download_audio(

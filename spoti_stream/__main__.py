@@ -15,12 +15,14 @@ from .downloader import (
 def ask_video_quality():
     print("\nChoose video quality:")
     print("1. Best available / HD")
-    print("2. 1080p")
-    print("3. 720p")
-    print("4. 480p")
-    print("5. 360p")
-    quality = input("Please enter 1, 2, 3, 4 or 5: ").strip()
-    if quality not in ('1', '2', '3', '4', '5'):
+    print("2. 4K")
+    print("3. 1440p")
+    print("4. 1080p")
+    print("5. 720p")
+    print("6. 480p")
+    print("7. 360p")
+    quality = input("Please enter 1, 2, 3, 4, 5, 6 or 7: ").strip()
+    if quality not in ('1', '2', '3', '4', '5', '6', '7'):
         print("Invalid quality. Using 720p.")
         return '720'
     return quality
@@ -38,9 +40,9 @@ def main():
         print("1. Use a Spotify playlist")
         print("2. Provide your own CSV or TXT file")
         print("3. Manually type in song names")
-        print("4. Use a YouTube playlist")
+        print("4. Download audio from YouTube input")
         print("5. Download a video by song name")
-        print("6. Download videos from a YouTube playlist")
+        print("6. Download videos from YouTube input")
         print("7. Exit from SpotiStream")
 
         choice = input("Please enter 1, 2, 3, 4, 5, 6 or 7: ").strip()
@@ -100,8 +102,8 @@ def main():
                 download_song(song_name, artist_name)
 
         elif choice == '4':
-            playlist_url = input("Enter the YouTube playlist URL: ").strip()
-            download_songs_from_youtube_playlist(playlist_url)
+            youtube_input = input("Enter a YouTube URL, playlist, channel, or search query: ").strip()
+            download_songs_from_youtube_playlist(youtube_input)
 
         elif choice == '5':
             song_name = input("Enter the song name: ").strip()
@@ -110,9 +112,9 @@ def main():
             download_video_by_song(song_name, artist_name, quality)
 
         elif choice == '6':
-            playlist_url = input("Enter the YouTube playlist URL: ").strip()
+            youtube_input = input("Enter a YouTube URL, playlist, channel, or search query: ").strip()
             quality = ask_video_quality()
-            download_videos_from_youtube_playlist(playlist_url, quality)
+            download_videos_from_youtube_playlist(youtube_input, quality)
 
         elif choice == '7':
             print("\n    *-------------------------------*    ")
