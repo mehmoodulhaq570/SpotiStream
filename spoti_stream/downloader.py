@@ -17,19 +17,41 @@ def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
 
-def get_mp3_file_path(song_name, artist_name, download_dir):
-    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
-    return os.path.join(download_dir, f"{sanitized_song_name}.mp3")
+def get_output_basename(song_name, artist_name=None, output_name=None):
+    if output_name:
+        return sanitize_filename(output_name)
+    return sanitize_filename(f"{song_name} by {artist_name}")
 
 
-def get_video_file_path(song_name, artist_name, download_dir, extension='mp4'):
-    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
-    return os.path.join(download_dir, f"{sanitized_song_name}.{extension}")
+def is_placeholder_title(title):
+    if not title:
+        return True
+    return title in ('YouTube video',) or bool(re.match(r'^(Video|Track) \d+$', title))
 
 
-def find_existing_video_file(song_name, artist_name, download_dir):
+def get_source_title(source):
+    try:
+        info = get_stream_info(source)
+    except Exception:
+        return None
+    if info and info.get('entries'):
+        info = next((entry for entry in info.get('entries', []) if entry), None)
+    return info.get('title') if info else None
+
+
+def get_mp3_file_path(song_name, artist_name, download_dir, output_name=None):
+    output_basename = get_output_basename(song_name, artist_name, output_name)
+    return os.path.join(download_dir, f"{output_basename}.mp3")
+
+
+def get_video_file_path(song_name, artist_name, download_dir, extension='mp4', output_name=None):
+    output_basename = get_output_basename(song_name, artist_name, output_name)
+    return os.path.join(download_dir, f"{output_basename}.{extension}")
+
+
+def find_existing_video_file(song_name, artist_name, download_dir, output_name=None):
     for extension in ('mkv', 'mp4', 'webm'):
-        video_file_path = get_video_file_path(song_name, artist_name, download_dir, extension)
+        video_file_path = get_video_file_path(song_name, artist_name, download_dir, extension, output_name)
         if os.path.exists(video_file_path):
             return video_file_path
     return None
@@ -77,11 +99,11 @@ def show_download_progress(progress):
         print("\rDownload complete. Finalizing file...          ")
 
 
-def build_ydl_options(song_name, artist_name, download_dir):
-    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
+def build_ydl_options(song_name, artist_name, download_dir, output_name=None):
+    output_basename = get_output_basename(song_name, artist_name, output_name)
     return {
         'format': 'bestaudio/best',
-        'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.%(ext)s"),
+        'outtmpl': os.path.join(download_dir, f"{output_basename}.%(ext)s"),
         'noplaylist': True,
         'quiet': True,
         'no_warnings': True,
@@ -423,10 +445,10 @@ def inspect_video_source(source, quality):
         video_info = get_stream_info(source)
     except yt_dlp.utils.DownloadError as e:
         print(f"\nCould not inspect video formats: {e}")
-        return None, None
+        return None, None, None
     except Exception as e:
         print(f"\nAn error occurred while inspecting video formats: {e}")
-        return None, None
+        return None, None, None
     finally:
         stop_event.set()
         progress_thread.join()
@@ -435,7 +457,7 @@ def inspect_video_source(source, quality):
         video_info = next((entry for entry in video_info.get('entries', []) if entry), None)
 
     if not video_info:
-        return None, None
+        return None, None, None
 
     selected_format, best_video, best_audio = choose_exact_video_format(video_info, quality)
     if best_video:
@@ -454,14 +476,14 @@ def inspect_video_source(source, quality):
             f"{best_audio.get('acodec')}"
         )
 
-    return selected_format, video_info.get('webpage_url') or source
+    return selected_format, video_info.get('webpage_url') or source, video_info.get('title')
 
 
-def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'):
-    sanitized_song_name = sanitize_filename(f"{song_name} by {artist_name}")
+def build_video_ydl_options(song_name, artist_name, download_dir, quality='best', output_name=None):
+    output_basename = get_output_basename(song_name, artist_name, output_name)
     return {
         'format': get_video_format(quality),
-        'outtmpl': os.path.join(download_dir, f"{sanitized_song_name}.%(ext)s"),
+        'outtmpl': os.path.join(download_dir, f"{output_basename}.%(ext)s"),
         'noplaylist': True,
         'quiet': True,
         'no_warnings': True,
@@ -490,8 +512,11 @@ def merge(video_path, audio_path, output_path):
     subprocess.run(command, check=True)
 
 
-def download_audio(source, song_name, artist_name, download_dir='songs', message=None):
-    mp3_file_path = get_mp3_file_path(song_name, artist_name, download_dir)
+def download_audio(source, song_name, artist_name, download_dir='songs', message=None, output_name=None, use_source_title=False):
+    if use_source_title and is_placeholder_title(output_name):
+        output_name = get_source_title(source)
+
+    mp3_file_path = get_mp3_file_path(song_name, artist_name, download_dir, output_name)
     mp3_file_name = os.path.basename(mp3_file_path)
     os.makedirs(download_dir, exist_ok=True)
 
@@ -499,7 +524,7 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
         print(f"'{song_name} by {artist_name}' is already downloaded as MP3. Skipping...")
         return True
 
-    ydl_opts = build_ydl_options(song_name, artist_name, download_dir)
+    ydl_opts = build_ydl_options(song_name, artist_name, download_dir, output_name)
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
@@ -517,22 +542,23 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
     return False
 
 
-def download_video(source, song_name, artist_name, quality='best', download_dir='videos', message=None):
-    existing_video_file = find_existing_video_file(song_name, artist_name, download_dir)
-    video_file_path = get_video_file_path(song_name, artist_name, download_dir)
-    video_file_name = os.path.basename(video_file_path)
+def download_video(source, song_name, artist_name, quality='best', download_dir='videos', message=None, output_name=None):
     os.makedirs(download_dir, exist_ok=True)
-
-    if existing_video_file:
-        print(f"'{song_name} by {artist_name}' is already downloaded as video. Skipping: {os.path.basename(existing_video_file)}")
-        return True
 
     if message:
         print(message)
     print(f"Requested video quality: {get_video_quality_label(quality)}")
-    selected_format, resolved_source = inspect_video_source(source, quality)
+    selected_format, resolved_source, source_title = inspect_video_source(source, quality)
+    final_output_name = output_name or source_title
+    existing_video_file = find_existing_video_file(song_name, artist_name, download_dir, final_output_name)
+    video_file_path = get_video_file_path(song_name, artist_name, download_dir, output_name=final_output_name)
+    video_file_name = os.path.basename(video_file_path)
 
-    ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality)
+    if existing_video_file:
+        print(f"'{video_file_name}' is already downloaded as video. Skipping: {os.path.basename(existing_video_file)}")
+        return True
+
+    ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality, final_output_name)
     if selected_format:
         ydl_opts['format'] = selected_format
         source = resolved_source
@@ -558,6 +584,7 @@ def download_video_entry(entry, quality='best', download_dir='videos'):
     uploader = entry.get('uploader') or entry.get('channel') or 'YouTube'
     song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
     video_url = get_video_url(entry)
+    output_name = None if is_placeholder_title(title) else title
 
     if not video_url:
         print(f"Could not find a playable URL for: {title}")
@@ -570,6 +597,7 @@ def download_video_entry(entry, quality='best', download_dir='videos'):
         quality,
         download_dir,
         f"Downloading YouTube video: {title}",
+        output_name,
     )
 
 
@@ -666,6 +694,7 @@ def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
         print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
 
         video_url = get_video_url(entry)
+        output_name = None if is_placeholder_title(title) else title
 
         if video_url:
             success = download_audio(
@@ -674,6 +703,8 @@ def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
                 artist_name,
                 download_dir,
                 f"Downloading from playlist video: {title}",
+                output_name,
+                True,
             )
             if not success:
                 print("Trying again with YouTube search...")
