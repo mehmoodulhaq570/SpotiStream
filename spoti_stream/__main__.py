@@ -9,6 +9,7 @@ from .downloader import (
     download_videos_from_youtube_playlist,
     download_song,
     download_video_by_song,
+    print_stopped_message,
 )
 
 
@@ -133,4 +134,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print_stopped_message()

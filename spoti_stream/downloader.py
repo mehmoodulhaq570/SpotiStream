@@ -13,6 +13,11 @@ YOUTUBE_HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
 }
 
+
+def print_stopped_message():
+    print("\n\nSpotiStream package has stopped.")
+
+
 def sanitize_filename(filename):
     return re.sub(r'[\\/*?:"<>|]', '_', filename)
 
@@ -551,6 +556,9 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
             ydl.download([source])
             print(f"Downloaded: {mp3_file_name}")
             return True
+        except KeyboardInterrupt:
+            print_stopped_message()
+            return False
         except yt_dlp.utils.DownloadError as e:
             print(f"Download error for {song_name} by {artist_name}: {e}")
             if 'HTTP Error 403' in str(e):
@@ -596,6 +604,11 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
                     retry_source = refreshed_source
             format_selector = selected_format
         else:
+            if attempt_index == selected_stream_retry_count + 1:
+                print(
+                    f"Could not download the requested {get_video_quality_label(quality)} stream after "
+                    "multiple retries. Switching to alternate formats; final quality may be lower."
+                )
             attempt_label, format_selector = retry_formats[attempt_index - selected_stream_retry_count - 1]
 
         ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality, final_output_name)
@@ -609,6 +622,9 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
                 ydl.download([retry_source])
                 print(f"Downloaded video: {video_file_name}")
                 return True
+            except KeyboardInterrupt:
+                print_stopped_message()
+                return False
             except yt_dlp.utils.DownloadError as e:
                 last_error = e
                 print(f"Video download error using {attempt_label}: {e}")
