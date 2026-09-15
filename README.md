@@ -71,6 +71,14 @@ pip install -r requirements.txt
 
 SpotiStream uses `yt-dlp` for downloading audio and FFmpeg for MP3 conversion. If MP3 conversion fails, install FFmpeg and make sure it is available in your terminal.
 
+For full YouTube support, install Deno so `yt-dlp` can solve YouTube's playback challenges. On Windows:
+
+```powershell
+winget install --id DenoLand.Deno --exact
+```
+
+Restart the terminal after installing Deno.
+
 ## Get Spotify API Credentials
 
 You will need a Spotify Developer account to use SpotiStream. Follow the steps:
@@ -111,6 +119,10 @@ The program will prompt you to choose one of the following options:
 ## Contributing
 
 We welcome contributions! Please feel free to submit issues or pull requests to help improve SpotiStream.
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release notes and a history of notable changes.
 
 ## License
 

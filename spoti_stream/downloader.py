@@ -9,11 +9,6 @@ import imageio_ffmpeg
 import yt_dlp
 
 
-YOUTUBE_HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36',
-}
-
-
 def print_stopped_message():
     print("\n\nSpotiStream package has stopped.")
 
@@ -117,7 +112,6 @@ def build_ydl_options(song_name, artist_name, download_dir, output_name=None):
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
-        'http_headers': YOUTUBE_HEADERS,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -245,7 +239,6 @@ def get_ydl_extract_options(extract_flat=False, noplaylist=False):
         'ignoreerrors': True,
         'extract_flat': extract_flat,
         'noplaylist': noplaylist,
-        'http_headers': YOUTUBE_HEADERS,
     }
 
 
@@ -547,7 +540,6 @@ def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
-        'http_headers': YOUTUBE_HEADERS,
     }
 
 
@@ -609,7 +601,7 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
         except yt_dlp.utils.DownloadError as e:
             print(f"Download error for {song_name} by {artist_name}: {e}")
             if 'HTTP Error 403' in str(e):
-                print("Tip: run 'python -m pip install -U yt-dlp' if this keeps happening. YouTube often returns 403 when yt-dlp is outdated.")
+                print("Tip: update YouTube support with 'python -m pip install -U \"yt-dlp[default]\"' and make sure Deno is installed.")
         except Exception as e:
             print(f"An error occurred while downloading {song_name} by {artist_name}: {e}")
     return False
@@ -685,7 +677,7 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
     if last_error:
         print(f"Video download error for {song_name} by {artist_name}: {last_error}")
         if is_http_403_error(last_error):
-            print("All same-video retry formats failed with HTTP 403. Try updating yt-dlp if this keeps happening: python -m pip install -U yt-dlp")
+            print("All retry formats failed with HTTP 403. Update with 'python -m pip install -U \"yt-dlp[default]\"' and make sure Deno is installed.")
     return False
 
 
