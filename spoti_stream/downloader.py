@@ -8,6 +8,8 @@ import time
 import imageio_ffmpeg
 import yt_dlp
 
+from .progress import DownloadProgress
+
 
 def print_stopped_message():
     print("\n\nSpotiStream package has stopped.")
@@ -99,16 +101,16 @@ def show_download_progress(progress):
         print("\rDownload complete. Finalizing file...          ")
 
 
-def build_ydl_options(song_name, artist_name, download_dir, output_name=None):
+def build_ydl_options(song_name, artist_name, download_dir, output_name=None, progress=None):
     output_basename = get_output_basename(song_name, artist_name, output_name)
-    return {
+    options = {
         'format': 'bestaudio/best',
         'outtmpl': os.path.join(download_dir, f"{output_basename}.%(ext)s"),
         'noplaylist': True,
         'quiet': True,
         'no_warnings': True,
         'ffmpeg_location': imageio_ffmpeg.get_ffmpeg_exe(),
-        'progress_hooks': [show_download_progress],
+        'progress_hooks': [progress.download_hook if progress else show_download_progress],
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
@@ -118,6 +120,9 @@ def build_ydl_options(song_name, artist_name, download_dir, output_name=None):
             'preferredquality': '192',
         }],
     }
+    if progress:
+        options['postprocessor_hooks'] = [progress.postprocessor_hook]
+    return options
 
 
 def get_video_format(quality):
@@ -524,9 +529,9 @@ def inspect_video_source(source, quality):
     return selected_format, video_info.get('webpage_url') or source, video_info.get('title')
 
 
-def build_video_ydl_options(song_name, artist_name, download_dir, quality='best', output_name=None):
+def build_video_ydl_options(song_name, artist_name, download_dir, quality='best', output_name=None, progress=None):
     output_basename = get_output_basename(song_name, artist_name, output_name)
-    return {
+    options = {
         'format': get_video_format(quality),
         'outtmpl': os.path.join(download_dir, f"{output_basename}.%(ext)s"),
         'noplaylist': True,
@@ -536,11 +541,14 @@ def build_video_ydl_options(song_name, artist_name, download_dir, quality='best'
         'merge_output_format': 'mp4',
         'format_sort': ['res', 'fps', 'br'],
         'format_sort_force': True,
-        'progress_hooks': [show_download_progress],
+        'progress_hooks': [progress.download_hook if progress else show_download_progress],
         'retries': 3,
         'fragment_retries': 3,
         'continuedl': True,
     }
+    if progress:
+        options['postprocessor_hooks'] = [progress.postprocessor_hook]
+    return options
 
 
 def is_http_403_error(error):
@@ -574,7 +582,16 @@ def merge(video_path, audio_path, output_path):
     subprocess.run(command, check=True)
 
 
-def download_audio(source, song_name, artist_name, download_dir='songs', message=None, output_name=None, use_source_title=False):
+def download_audio(
+    source,
+    song_name,
+    artist_name,
+    download_dir='songs',
+    message=None,
+    output_name=None,
+    use_source_title=False,
+    progress=None,
+):
     if use_source_title and is_placeholder_title(output_name):
         output_name = get_source_title(source)
 
@@ -584,30 +601,49 @@ def download_audio(source, song_name, artist_name, download_dir='songs', message
 
     if os.path.exists(mp3_file_path):
         print(f"'{song_name} by {artist_name}' is already downloaded as MP3. Skipping...")
+        if progress:
+            progress.finish_item("skipped")
         return True
 
-    ydl_opts = build_ydl_options(song_name, artist_name, download_dir, output_name)
+    progress_display = progress or DownloadProgress()
+    ydl_opts = build_ydl_options(song_name, artist_name, download_dir, output_name, progress_display)
 
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        try:
+    try:
+        if progress is None:
+            progress_display.__enter__()
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             if message:
                 print(message)
             ydl.download([source])
+            if progress:
+                progress.finish_item("downloaded")
             print(f"Downloaded: {mp3_file_name}")
             return True
-        except KeyboardInterrupt:
-            print_stopped_message()
-            return False
-        except yt_dlp.utils.DownloadError as e:
-            print(f"Download error for {song_name} by {artist_name}: {e}")
-            if 'HTTP Error 403' in str(e):
-                print("Tip: update YouTube support with 'python -m pip install -U \"yt-dlp[default]\"' and make sure Deno is installed.")
-        except Exception as e:
-            print(f"An error occurred while downloading {song_name} by {artist_name}: {e}")
+    except KeyboardInterrupt:
+        print_stopped_message()
+        return False
+    except yt_dlp.utils.DownloadError as e:
+        print(f"Download error for {song_name} by {artist_name}: {e}")
+        if 'HTTP Error 403' in str(e):
+            print("Tip: update YouTube support with 'python -m pip install -U \"yt-dlp[default]\"' and make sure Deno is installed.")
+    except Exception as e:
+        print(f"An error occurred while downloading {song_name} by {artist_name}: {e}")
+    finally:
+        if progress is None:
+            progress_display.__exit__(None, None, None)
     return False
 
 
-def download_video(source, song_name, artist_name, quality='best', download_dir='videos', message=None, output_name=None):
+def download_video(
+    source,
+    song_name,
+    artist_name,
+    quality='best',
+    download_dir='videos',
+    message=None,
+    output_name=None,
+    progress=None,
+):
     os.makedirs(download_dir, exist_ok=True)
 
     if message:
@@ -621,6 +657,8 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
 
     if existing_video_file:
         print(f"'{video_file_name}' is already downloaded as video. Skipping: {os.path.basename(existing_video_file)}")
+        if progress:
+            progress.finish_item("skipped")
         return True
 
     if selected_format:
@@ -632,47 +670,58 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
     retry_source = source
     retry_formats = get_video_retry_formats(selected_format, quality)
     selected_stream_retry_count = 3 if selected_format else 0
+    progress_display = progress or DownloadProgress()
 
-    for attempt_index in range(1, selected_stream_retry_count + len(retry_formats) + 1):
-        if attempt_index <= selected_stream_retry_count:
-            attempt_label = f"refreshed selected HD stream attempt {attempt_index}"
+    try:
+        if progress is None:
+            progress_display.__enter__()
+        for attempt_index in range(1, selected_stream_retry_count + len(retry_formats) + 1):
+            if attempt_index <= selected_stream_retry_count:
+                attempt_label = f"refreshed selected HD stream attempt {attempt_index}"
+                if attempt_index > 1:
+                    refreshed_format, refreshed_source = refresh_selected_video_format(source, quality)
+                    if refreshed_format:
+                        selected_format = refreshed_format
+                        retry_source = refreshed_source
+                format_selector = selected_format
+            else:
+                if attempt_index == selected_stream_retry_count + 1:
+                    print(
+                        f"Could not download the requested {get_video_quality_label(quality)} stream after "
+                        "multiple retries. Switching to alternate formats; final quality may be lower."
+                    )
+                attempt_label, format_selector = retry_formats[attempt_index - selected_stream_retry_count - 1]
+
+            ydl_opts = build_video_ydl_options(
+                song_name, artist_name, download_dir, quality, final_output_name, progress_display
+            )
+            ydl_opts['format'] = format_selector
+
             if attempt_index > 1:
-                refreshed_format, refreshed_source = refresh_selected_video_format(source, quality)
-                if refreshed_format:
-                    selected_format = refreshed_format
-                    retry_source = refreshed_source
-            format_selector = selected_format
-        else:
-            if attempt_index == selected_stream_retry_count + 1:
-                print(
-                    f"Could not download the requested {get_video_quality_label(quality)} stream after "
-                    "multiple retries. Switching to alternate formats; final quality may be lower."
-                )
-            attempt_label, format_selector = retry_formats[attempt_index - selected_stream_retry_count - 1]
+                print(f"Retrying same video with {attempt_label}...")
 
-        ydl_opts = build_video_ydl_options(song_name, artist_name, download_dir, quality, final_output_name)
-        ydl_opts['format'] = format_selector
-
-        if attempt_index > 1:
-            print(f"Retrying same video with {attempt_label}...")
-
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            try:
-                ydl.download([retry_source])
-                print(f"Downloaded video: {video_file_name}")
-                return True
-            except KeyboardInterrupt:
-                print_stopped_message()
-                return False
-            except yt_dlp.utils.DownloadError as e:
-                last_error = e
-                print(f"Video download error using {attempt_label}: {e}")
-                if not is_http_403_error(e):
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                try:
+                    ydl.download([retry_source])
+                    if progress:
+                        progress.finish_item("downloaded")
+                    print(f"Downloaded video: {video_file_name}")
+                    return True
+                except yt_dlp.utils.DownloadError as e:
+                    last_error = e
+                    print(f"Video download error using {attempt_label}: {e}")
+                    if not is_http_403_error(e):
+                        break
+                except Exception as e:
+                    last_error = e
+                    print(f"An error occurred while downloading video {song_name} by {artist_name}: {e}")
                     break
-            except Exception as e:
-                last_error = e
-                print(f"An error occurred while downloading video {song_name} by {artist_name}: {e}")
-                break
+    except KeyboardInterrupt:
+        print_stopped_message()
+        return False
+    finally:
+        if progress is None:
+            progress_display.__exit__(None, None, None)
 
     if last_error:
         print(f"Video download error for {song_name} by {artist_name}: {last_error}")
@@ -681,7 +730,7 @@ def download_video(source, song_name, artist_name, quality='best', download_dir=
     return False
 
 
-def download_video_entry(entry, quality='best', download_dir='videos'):
+def download_video_entry(entry, quality='best', download_dir='videos', progress=None):
     title = entry.get('title') or entry.get('fulltitle') or 'YouTube video'
     uploader = entry.get('uploader') or entry.get('channel') or 'YouTube'
     song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
@@ -700,6 +749,7 @@ def download_video_entry(entry, quality='best', download_dir='videos'):
         download_dir,
         f"Downloading YouTube video: {title}",
         output_name,
+        progress,
     )
 
 
@@ -711,25 +761,25 @@ def download_videos_from_youtube_input(query, quality='best', download_dir='vide
 
     print(f"Resolved {len(entries)} YouTube video(s).")
     downloaded_videos = set()
+    with DownloadProgress("YouTube videos", len(entries)) as progress:
+        for index, entry in enumerate(entries, start=1):
+            title = entry.get('title') or f'Video {index}'
+            uploader = entry.get('uploader') or entry.get('channel')
+            song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+            video_key = normalize_song_key(song_name, artist_name)
+            progress.start_item(index, title)
 
-    for index, entry in enumerate(entries, start=1):
-        title = entry.get('title') or f'Video {index}'
-        uploader = entry.get('uploader') or entry.get('channel')
-        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
-        video_key = normalize_song_key(song_name, artist_name)
+            if video_key in downloaded_videos:
+                progress.finish_item("skipped")
+                continue
 
-        if video_key in downloaded_videos:
-            print(f"\n[{index}/{len(entries)}] Duplicate video already handled. Skipping: {song_name} by {artist_name}")
-            continue
-
-        downloaded_videos.add(video_key)
-        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
-        success = download_video_entry(entry, quality, download_dir)
-        if not success:
-            print("Skipping this video after same-video retry formats failed.")
+            downloaded_videos.add(video_key)
+            success = download_video_entry(entry, quality, download_dir, progress)
+            if progress.current_status is None:
+                progress.finish_item("downloaded" if success else "failed")
 
 
-def download_song(song_name, artist_name, download_dir='songs'):
+def download_song(song_name, artist_name, download_dir='songs', progress=None):
     query = f"{song_name} {artist_name} audio"
     return download_audio(
         f"ytsearch1:{query}",
@@ -737,6 +787,7 @@ def download_song(song_name, artist_name, download_dir='songs'):
         artist_name,
         download_dir,
         f"Searching and downloading: {query}",
+        progress=progress,
     )
 
 
@@ -761,8 +812,12 @@ def download_songs_from_playlist(sp, playlist_id, playlist_name, download_dir='s
     songs = fetch_songs_from_playlist(sp, playlist_id)
     if songs:
         save_songs_to_csv(songs, playlist_name)
-        for song_name, artist_name in songs:
-            download_song(song_name, artist_name, download_dir)
+        with DownloadProgress(playlist_name, len(songs)) as progress:
+            for index, (song_name, artist_name) in enumerate(songs, start=1):
+                progress.start_item(index, f"{song_name} — {artist_name}")
+                success = download_song(song_name, artist_name, download_dir, progress)
+                if progress.current_status is None:
+                    progress.finish_item("downloaded" if success else "failed")
     else:
         print(f"No songs found in playlist: {playlist_name}")
 
@@ -781,37 +836,41 @@ def download_songs_from_youtube_playlist(playlist_url, download_dir='songs'):
     print(f"Resolved {len(entries)} YouTube video(s).")
 
     downloaded_songs = set()
-    for index, entry in enumerate(entries, start=1):
-        title = entry.get('title') or f'Track {index}'
-        uploader = entry.get('uploader') or entry.get('channel')
-        song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
-        song_key = normalize_song_key(song_name, artist_name)
+    with DownloadProgress("YouTube audio", len(entries)) as progress:
+        for index, entry in enumerate(entries, start=1):
+            title = entry.get('title') or f'Track {index}'
+            uploader = entry.get('uploader') or entry.get('channel')
+            song_name, artist_name = parse_song_details_from_youtube_title(title, uploader)
+            song_key = normalize_song_key(song_name, artist_name)
+            progress.start_item(index, title)
 
-        if song_key in downloaded_songs:
-            print(f"\n[{index}/{len(entries)}] Duplicate song already handled. Skipping: {song_name} by {artist_name}")
-            continue
+            if song_key in downloaded_songs:
+                progress.finish_item("skipped")
+                continue
 
-        downloaded_songs.add(song_key)
-        print(f"\n[{index}/{len(entries)}] {song_name} by {artist_name}")
+            downloaded_songs.add(song_key)
+            video_url = get_video_url(entry)
+            output_name = None if is_placeholder_title(title) else title
 
-        video_url = get_video_url(entry)
-        output_name = None if is_placeholder_title(title) else title
+            if video_url:
+                success = download_audio(
+                    video_url,
+                    song_name,
+                    artist_name,
+                    download_dir,
+                    f"Downloading from playlist video: {title}",
+                    output_name,
+                    True,
+                    progress,
+                )
+                if not success:
+                    print("Trying again with YouTube search...")
+                    success = download_song(song_name, artist_name, download_dir, progress)
+            else:
+                success = download_song(song_name, artist_name, download_dir, progress)
 
-        if video_url:
-            success = download_audio(
-                video_url,
-                song_name,
-                artist_name,
-                download_dir,
-                f"Downloading from playlist video: {title}",
-                output_name,
-                True,
-            )
-            if not success:
-                print("Trying again with YouTube search...")
-                download_song(song_name, artist_name, download_dir)
-        else:
-            download_song(song_name, artist_name, download_dir)
+            if progress.current_status is None:
+                progress.finish_item("downloaded" if success else "failed")
 
 
 def download_songs_from_csv(csv_file_path, download_dir='songs'):

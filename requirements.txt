@@ -1,6 +1,6 @@
 spotipy==2.19.0
 yt-dlp[default]>=2026.8.19
-moviepy==1.0.3
 setuptools>=42
 requests>=2.26.0
 imageio-ffmpeg>=0.6.0
+rich>=14.2.0

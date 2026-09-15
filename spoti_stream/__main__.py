@@ -1,17 +1,6 @@
 # spoti_stream/__main__.py
 
-from .spotify_utils import authenticate_spotify, get_user_playlists
-from .downloader import (
-    download_songs_from_playlist,
-    download_songs_from_csv,
-    download_songs_from_txt,
-    download_songs_from_youtube_playlist,
-    download_videos_from_youtube_playlist,
-    download_song,
-    download_video_by_song,
-    print_stopped_message,
-)
-
+import sys
 
 def ask_video_quality():
     print("\nChoose video quality:")
@@ -29,7 +18,39 @@ def ask_video_quality():
     return quality
 
 
-def main():
+def print_cli_help():
+    print("Usage: spotistream [COMMAND]")
+    print("\nCommands:")
+    print("  doctor    Check Python, yt-dlp, FFmpeg, Deno, and Spotify setup")
+    print("  help      Show this help message")
+    print("\nRun without a command to open the interactive menu.")
+
+
+def main(args=None):
+    args = list(sys.argv[1:] if args is None else args)
+    if args:
+        command = args[0].lower()
+        if command == 'doctor' and len(args) == 1:
+            from .diagnostics import run_doctor
+            return run_doctor()
+        if command in ('help', '-h', '--help') and len(args) == 1:
+            print_cli_help()
+            return 0
+        print(f"Unknown command: {' '.join(args)}\n")
+        print_cli_help()
+        return 2
+
+    from .spotify_utils import authenticate_spotify, get_user_playlists
+    from .downloader import (
+        download_song,
+        download_songs_from_csv,
+        download_songs_from_playlist,
+        download_songs_from_txt,
+        download_songs_from_youtube_playlist,
+        download_video_by_song,
+        download_videos_from_youtube_playlist,
+    )
+
     print("\n[INFO] Welcome to SpotiStream! ")
     print("Download and listen to non-stop Spotify music with our tool.")
     print("Music is an art which reaches your soul to pacify it..... :)")
@@ -132,9 +153,11 @@ def main():
             print("    *-------------------------------*    ")
             break
 
+    return 0
+
 
 if __name__ == '__main__':
     try:
-        main()
+        raise SystemExit(main())
     except KeyboardInterrupt:
-        print_stopped_message()
+        print("\n\nSpotiStream package has stopped.")

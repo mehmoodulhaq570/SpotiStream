@@ -7,8 +7,14 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-09-16
+
 ### Added
 
+- Added a `spotistream doctor` command for checking Python, yt-dlp, EJS, FFmpeg, Deno, and Spotify configuration.
+- Added an installable `spotistream` console command while preserving `python -m spoti_stream`.
+- Added live, in-place video and audio progress with size, speed, ETA, and merge status.
+- Added overall/current playlist progress and downloaded, skipped, and failed summary totals.
 - Added audio downloads from YouTube videos, playlists, channels, URLs, and search queries.
 - Added video downloads by song and artist name.
 - Added video downloads from YouTube videos, playlists, channels, URLs, and search queries.
@@ -19,6 +25,8 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Changed
 
+- Removed unused MoviePy and pydub runtime dependencies.
+- Raised the declared minimum Python version to 3.11 to match the current yt-dlp toolchain.
 - Updated `yt-dlp` to `2026.08.19` and installed it with its default dependency set.
 - Added `yt-dlp-ejs` support and documented Deno as the recommended JavaScript runtime for full YouTube support.
 - Preserved original YouTube titles when naming downloaded audio and video files.
@@ -27,6 +35,8 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 ### Fixed
 
+- Made CLI imports lazy so `spotistream doctor` can report missing optional tools instead of failing during startup.
+- Removed automatic Scoop and FFmpeg installation during package import; diagnostics now reports actionable setup instructions instead.
 - Fixed YouTube media downloads failing partway through with `HTTP Error 403: Forbidden` by updating yt-dlp's extractor and JavaScript challenge-solving support.
 - Removed the obsolete hard-coded Chrome 126 user-agent so yt-dlp can manage compatible YouTube request headers.
 - Added up to three refreshed attempts for the selected stream before trying automatic, MP4 up-to-1080p, and muxed fallback formats.
@@ -62,6 +72,7 @@ and this project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
 
 - Renamed the package to `spoti_stream` and added the `python -m spoti_stream` entry point.
 
-[Unreleased]: https://github.com/mehmoodulhaq570/SpotiStream/compare/SoptiStream-1.3...HEAD
+[Unreleased]: https://github.com/mehmoodulhaq570/SpotiStream/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/mehmoodulhaq570/SpotiStream/compare/SoptiStream-1.3...v1.4.0
 [1.3]: https://github.com/mehmoodulhaq570/SpotiStream/releases/tag/SoptiStream-1.3
 [1.1]: https://github.com/mehmoodulhaq570/SpotiStream/releases/tag/version_1.1

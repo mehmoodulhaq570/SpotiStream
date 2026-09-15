@@ -1,8 +1,6 @@
 # spoti_stream/__init__.py
-from .install_dependencies import install_scoop, install_ffmpeg
+"""SpotiStream package."""
 
-# Install Scoop and FFmpeg only if they are not already installed
-install_scoop()
-install_ffmpeg()
+__version__ = "1.4.0"
 
 

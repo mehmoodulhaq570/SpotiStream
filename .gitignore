@@ -8,6 +8,6 @@ venv/
 *.egg-info/
 dist/
 build/
-spoti_stream.egg-info
+spoti_stream.egg-info/
 songs/
 videos/
